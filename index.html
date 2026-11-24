@@ -1,0 +1,2879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>O&amp;G ECHO Booking &amp; HOD Census System</title>
+
+    <!-- Google Fonts: Plus Jakarta Sans (Headings/UI) & Inter (Clinical Tables/Numbers) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        belacan: {
+                            50: '#FDF6F8',
+                            100: '#FDEBF0',
+                            200: '#F4DCE3',
+                            300: '#F3B4C5',
+                            400: '#EC7E9B',
+                            500: '#E4587B',
+                            600: '#D9486E',
+                            700: '#C43A62',
+                            800: '#A1264B',
+                            900: '#881B3E',
+                            950: '#5A0E27',
+                        },
+                        plum: {
+                            900: '#2B1B22',
+                            700: '#4F3640',
+                            500: '#7A5C67',
+                            400: '#9E818B',
+                        },
+                        coral: {
+                            50: '#FFF1E6',
+                            200: '#FBD5BA',
+                            600: '#D96B27',
+                            700: '#B85518',
+                        },
+                        clinical: {
+                            50: '#E6F7F2',
+                            200: '#B7E8DA',
+                            600: '#1F8A70',
+                            700: '#176E59',
+                        }
+                    },
+                    boxShadow: {
+                        'rose-sm': '0 2px 10px -2px rgba(136, 27, 62, 0.08), 0 1px 3px rgba(136, 27, 62, 0.05)',
+                        'rose-md': '0 8px 24px -6px rgba(136, 27, 62, 0.14), 0 2px 6px rgba(136, 27, 62, 0.06)',
+                        'rose-lg': '0 16px 36px -8px rgba(136, 27, 62, 0.20), 0 4px 12px rgba(136, 27, 62, 0.08)',
+                    }
+                }
+            }
+        };
+    </script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Chart.js for HOD Executive Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- html2pdf.js for Executive Pink Belacan A4 PDF Census Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        /* Base Typography & Vibrant Pink Belacan Gradient Canvas */
+        html, body {
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background:
+                radial-gradient(circle at 12% 10%, rgba(236, 126, 155, 0.45) 0%, transparent 45%),
+                radial-gradient(circle at 88% 18%, rgba(251, 176, 148, 0.45) 0%, transparent 48%),
+                radial-gradient(circle at 50% 95%, rgba(217, 72, 110, 0.28) 0%, transparent 55%),
+                linear-gradient(155deg, #FBD2DF 0%, #F7B7CC 48%, #FCCAC1 100%);
+            background-attachment: fixed;
+            color: #2B1B22;
+        }
+
+        h1, h2, h3, h4, .font-display {
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        }
+
+        /* Hide scrollbars on horizontal pill strips */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Executive Berry-Belacan Gradient */
+        .bg-belacan-gradient {
+            background: linear-gradient(135deg, #881B3E 0%, #C43A62 55%, #D9486E 100%);
+        }
+        .bg-belacan-btn {
+            background: linear-gradient(135deg, #D9486E 0%, #C43A62 100%);
+        }
+        .bg-belacan-btn:hover {
+            background: linear-gradient(135deg, #C43A62 0%, #881B3E 100%);
+        }
+
+        /* Safe Area Support for Mobile Bottom Dock */
+        .safe-bottom {
+            padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+        }
+
+        /* Sleek Rose-Tinted Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FDF6F8;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #E7C4CF;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D9486E;
+        }
+
+        /* Smooth Modal Entrance */
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(10px) scale(0.985); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-modal {
+            animation: fadeSlideUp 0.18s ease-out forwards;
+        }
+
+        /* Print Styles for Formal Hospital Report */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+            body {
+                background: #FFFFFF !important;
+                color: #2B1B22 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .print-only-table {
+                display: block !important;
+            }
+            #main-content-wrapper {
+                margin-left: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            .print-break-inside-avoid {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            table {
+                font-size: 10px !important;
+            }
+            th, td {
+                padding: 5px 6px !important;
+            }
+        }
+        .print-only {
+            display: none;
+        }
+    </style>
+</head>
+<body class="text-plum-900 antialiased selection:bg-belacan-100 selection:text-belacan-900">
+
+    <!-- ==================== MAIN FULL-WIDTH APP WRAPPER (UNOBSTRUCTED LAYOUT) ==================== -->
+    <div id="main-content-wrapper" class="min-h-screen flex flex-col w-full pb-24 md:pb-6">
+
+        <!-- ==================== TOP EXECUTIVE NAVIGATION HEADER ==================== -->
+        <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-lg border-b border-belacan-300/70 shadow-rose-sm no-print">
+            <!-- Row 1: Brand, Sync Status, Primary Actions & Staff Profile -->
+            <div class="max-w-[1600px] mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-3">
+                <!-- Left: Brand Identity + Live Sync Pill -->
+                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-belacan-gradient text-white flex items-center justify-center shadow-rose-sm shrink-0">
+                        <i data-lucide="heart-pulse" class="w-5 h-5"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                            <h1 class="font-display text-sm sm:text-base font-extrabold text-plum-900 leading-tight tracking-tight truncate">O&amp;G ECHO Suite</h1>
+                            <span id="sync-status-badge" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-belacan-50 border border-belacan-200/80 text-[10px] font-semibold text-plum-500">
+                                <span id="sync-dot" class="w-1.5 h-1.5 rounded-full bg-belacan-500 animate-pulse"></span>
+                                <span id="sync-text">Connecting...</span>
+                                <span class="text-belacan-300">&bull;</span>
+                                <span id="total-records-count" class="font-bold text-plum-900">0 rec</span>
+                            </span>
+                        </div>
+                        <p id="header-view-subtitle" class="text-[11px] text-plum-500 truncate">Department of Obstetrics &amp; Gynaecology</p>
+                    </div>
+                </div>
+
+                <!-- Right: Primary CTA, Demo Reset & Staff Profile Switcher -->
+                <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+                    <button onclick="confirmLoadSampleData()" class="hidden lg:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-belacan-200 bg-belacan-50/70 hover:bg-belacan-100 text-belacan-900 font-display text-xs font-bold transition-all" title="Restore the 30 Nov 2026 – Jan 2027 demo records">
+                        <i data-lucide="database" class="w-3.5 h-3.5 text-belacan-600"></i>
+                        <span>Load 30 Demo</span>
+                    </button>
+
+                    <button onclick="openBookingModal()" class="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 min-h-[38px] rounded-xl bg-belacan-btn active:scale-[0.98] text-white font-display text-xs font-bold shadow-rose-sm hover:shadow-rose-md transition-all">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">New ECHO Booking</span>
+                        <span class="sm:hidden">Book</span>
+                    </button>
+
+                    <!-- Active Staff Profile Switcher Pill -->
+                    <button onclick="openStaffModal()" id="staff-profile-btn" class="flex items-center gap-2 p-1.5 md:pl-1.5 md:pr-2.5 rounded-xl border border-belacan-200 bg-belacan-50/80 hover:bg-white hover:border-belacan-400 transition-all text-left shadow-2xs min-h-[38px]">
+                        <div id="staff-avatar-badge" class="w-7 h-7 rounded-lg bg-belacan-gradient text-white text-[11px] font-extrabold flex items-center justify-center shrink-0">
+                            DR
+                        </div>
+                        <div class="hidden md:block leading-tight">
+                            <div id="staff-display-name" class="text-xs font-bold text-plum-900 max-w-[120px] truncate">Dr. Amirul</div>
+                            <div id="staff-display-role" class="text-[10px] text-belacan-700 font-semibold">Doctor (Dr)</div>
+                        </div>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-plum-400 hidden md:block"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Row 2: Horizontal View Tabs (Desktop & Tablet) + Inline Policy Strip -->
+            <div class="hidden md:block border-t border-belacan-100 bg-belacan-50/60">
+                <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-2 flex items-center justify-between gap-4">
+                    <!-- Horizontally Scrollable Navigation Tabs -->
+                    <nav class="flex items-center gap-1.5 overflow-x-auto pb-0.5 -mb-0.5 no-scrollbar">
+                        <button data-nav="daily" onclick="switchView('daily')" class="nav-btn shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all">
+                            <i data-lucide="calendar-clock" class="w-3.5 h-3.5 shrink-0"></i>
+                            <span>Daily</span>
+                        </button>
+                        <button data-nav="weekly" onclick="switchView('weekly')" class="nav-btn shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all">
+                            <i data-lucide="calendar-range" class="w-3.5 h-3.5 shrink-0"></i>
+                            <span>Weekly</span>
+                        </button>
+                        <button data-nav="monthly" onclick="switchView('monthly')" class="nav-btn shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all">
+                            <i data-lucide="calendar-days" class="w-3.5 h-3.5 shrink-0"></i>
+                            <span>Monthly</span>
+                        </button>
+                        <button data-nav="yearly" onclick="switchView('yearly')" class="nav-btn shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all">
+                            <i data-lucide="grid-2x2" class="w-3.5 h-3.5 shrink-0"></i>
+                            <span>Yearly</span>
+                        </button>
+                        <span class="h-5 w-px bg-belacan-200 mx-1 shrink-0"></span>
+                        <button data-nav="dashboard" onclick="switchView('dashboard')" class="nav-btn shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all">
+                            <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 shrink-0"></i>
+                            <span>HOD Dashboard</span>
+                        </button>
+                        <button data-nav="census" onclick="switchView('census')" class="nav-btn shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all">
+                            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 shrink-0"></i>
+                            <span>Census &amp; PDF</span>
+                        </button>
+                    </nav>
+
+                    <!-- Compact Policy Indicator (Desktop) -->
+                    <div class="hidden xl:flex items-center gap-3 text-[11px] text-plum-700 shrink-0 bg-white px-3 py-1.5 rounded-xl border border-belacan-200/80">
+                        <span class="flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-belacan-600"></span>
+                            <span><strong>OP:</strong> Tue/Wed 2PM (Max 6)</span>
+                        </span>
+                        <span class="text-belacan-200">|</span>
+                        <span class="flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-coral-600"></span>
+                            <span><strong>Ad Hoc:</strong> 24h Anytime</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ==================== MOBILE BOTTOM NAVIGATION DOCK (< md) ==================== -->
+        <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-lg border-t border-belacan-200 shadow-rose-lg safe-bottom no-print">
+            <div class="grid grid-cols-6 items-center px-1 pt-1.5">
+                <button data-mobile-nav="daily" onclick="switchView('daily')" class="mobile-nav-btn flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[10px] font-bold transition-all">
+                    <i data-lucide="calendar-clock" class="w-4 h-4"></i>
+                    <span>Daily</span>
+                </button>
+                <button data-mobile-nav="weekly" onclick="switchView('weekly')" class="mobile-nav-btn flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[10px] font-bold transition-all">
+                    <i data-lucide="calendar-range" class="w-4 h-4"></i>
+                    <span>Week</span>
+                </button>
+                <button data-mobile-nav="monthly" onclick="switchView('monthly')" class="mobile-nav-btn flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[10px] font-bold transition-all">
+                    <i data-lucide="calendar-days" class="w-4 h-4"></i>
+                    <span>Month</span>
+                </button>
+                <button data-mobile-nav="yearly" onclick="switchView('yearly')" class="mobile-nav-btn flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[10px] font-bold transition-all">
+                    <i data-lucide="grid-2x2" class="w-4 h-4"></i>
+                    <span>Year</span>
+                </button>
+                <button data-mobile-nav="dashboard" onclick="switchView('dashboard')" class="mobile-nav-btn flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[10px] font-bold transition-all">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                    <span>HOD</span>
+                </button>
+                <button data-mobile-nav="census" onclick="switchView('census')" class="mobile-nav-btn flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[10px] font-bold transition-all">
+                    <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                    <span>Census</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Print-Only Executive Pink Belacan Header -->
+        <div class="print-only mb-5 rounded-2xl overflow-hidden border border-belacan-200">
+            <div class="bg-belacan-gradient text-white px-6 py-4 flex justify-between items-center">
+                <div>
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-belacan-100">Jabatan Obstetrik &amp; Ginekologi (O&amp;G)</p>
+                    <h1 class="font-display text-lg font-extrabold">Echocardiogram (ECHO) Service — Clinical Census &amp; HOD Report</h1>
+                    <p id="print-period-label" class="text-xs text-belacan-100 mt-0.5">Report Period: All Records</p>
+                </div>
+                <div class="text-right text-xs text-belacan-100">
+                    <p><strong class="text-white">Generated By:</strong> <span id="print-generated-by">Staff</span></p>
+                    <p><strong class="text-white">Printed On:</strong> <span id="print-timestamp"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== DYNAMIC MAIN VIEW CONTAINER ==================== -->
+        <main id="app-main" class="flex-1 px-3 py-4 sm:p-6 max-w-[1600px] w-full mx-auto">
+
+            <!-- Current View Heading Strip (Compact) -->
+            <div class="flex items-center justify-between gap-2 mb-3.5 sm:mb-4 no-print">
+                <h2 id="header-view-title" class="font-display text-base sm:text-xl font-extrabold text-belacan-950 tracking-tight drop-shadow-2xs">Daily ECHO Schedule</h2>
+                <button onclick="confirmLoadSampleData()" class="lg:hidden inline-flex items-center gap-1.5 px-3 py-1.5 min-h-[34px] rounded-xl border border-belacan-300/80 bg-white/90 text-belacan-900 text-[11px] font-bold shadow-2xs">
+                    <i data-lucide="database" class="w-3.5 h-3.5 text-belacan-600"></i>
+                    <span>30 Demo</span>
+                </button>
+            </div>
+
+            <!-- ========== 1. DAILY VIEW ========== -->
+            <section id="view-daily" class="app-view space-y-4 sm:space-y-5">
+                <!-- Date Bar -->
+                <div class="bg-white/95 backdrop-blur-md rounded-2xl border border-belacan-200/90 p-3.5 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 shadow-rose-sm">
+                    <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                        <button onclick="shiftDailyDate(-1)" class="p-2.5 sm:p-2 rounded-xl border border-belacan-200 hover:bg-belacan-50 text-plum-700 transition-colors" title="Previous Day">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="goToday()" class="px-3.5 py-2.5 sm:py-2 rounded-xl border border-belacan-200 hover:bg-belacan-50 text-xs font-bold text-belacan-800 transition-colors">
+                            Today
+                        </button>
+                        <button onclick="shiftDailyDate(1)" class="p-2.5 sm:p-2 rounded-xl border border-belacan-200 hover:bg-belacan-50 text-plum-700 transition-colors" title="Next Day">
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                        <input type="date" id="daily-date-picker" onchange="setDailyDate(this.value)" class="flex-1 sm:flex-initial min-w-[140px] px-3 py-2 sm:py-1.5 rounded-xl border border-belacan-200 text-sm font-semibold text-plum-900 focus:outline-none focus:ring-2 focus:ring-belacan-500/25 focus:border-belacan-600" />
+                    </div>
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <div id="daily-day-badge" class="px-3 py-1.5 rounded-xl text-xs font-bold text-center sm:text-left"></div>
+                        <div class="grid grid-cols-2 sm:flex items-center gap-2">
+                            <button id="daily-quick-op-btn" onclick="openBookingModal({ date: state.selectedDate, type: 'Outpatient' })" class="px-3 py-2.5 sm:py-2 rounded-xl bg-belacan-btn text-white font-display text-xs font-bold flex items-center justify-center gap-1.5 shadow-rose-sm hover:shadow-rose-md transition-all">
+                                <i data-lucide="clock" class="w-3.5 h-3.5 shrink-0"></i>
+                                <span>+ Outpatient</span>
+                            </button>
+                            <button onclick="openBookingModal({ date: state.selectedDate, type: 'Ad Hoc' })" class="px-3 py-2.5 sm:py-2 rounded-xl bg-coral-600 hover:bg-coral-700 text-white font-display text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all">
+                                <i data-lucide="zap" class="w-3.5 h-3.5 shrink-0"></i>
+                                <span>+ Ad Hoc</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Daily Content -->
+                <div id="daily-content-area" class="space-y-6"></div>
+            </section>
+
+            <!-- ========== 2. WEEKLY VIEW ========== -->
+            <section id="view-weekly" class="app-view hidden space-y-5">
+                <div class="bg-white/95 rounded-2xl border border-belacan-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-rose-sm">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button onclick="shiftWeek(-1)" class="p-2 rounded-xl border border-belacan-200 hover:bg-belacan-50 text-plum-700">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="goThisWeek()" class="px-3.5 py-2 rounded-xl border border-belacan-200 hover:bg-belacan-50 text-xs font-bold text-belacan-800">
+                            This Week
+                        </button>
+                        <button onclick="shiftWeek(1)" class="p-2 rounded-xl border border-belacan-200 hover:bg-belacan-50 text-plum-700">
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                        <h3 id="weekly-range-label" class="ml-1 sm:ml-2 font-display text-sm sm:text-base font-extrabold text-plum-900"></h3>
+                    </div>
+                    <div class="flex items-center gap-3 sm:gap-4 text-xs font-medium text-plum-700 flex-wrap">
+                        <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-belacan-600"></span> Outpatient (Tue/Wed 2pm, Max 6)</span>
+                        <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-coral-600"></span> Ad Hoc &middot; Any Day / Any Time</span>
+                    </div>
+                </div>
+
+                <div id="weekly-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-3.5"></div>
+            </section>
+
+            <!-- ========== 3. MONTHLY VIEW ========== -->
+            <section id="view-monthly" class="app-view hidden space-y-5">
+                <div class="bg-white/95 rounded-2xl border border-belacan-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-rose-sm">
+                    <div class="flex items-center gap-2">
+                        <button onclick="shiftMonth(-1)" class="p-2 rounded-xl border border-belacan-200 hover:bg-belacan-50 text-plum-700">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="goThisMonth()" class="px-3.5 py-2 rounded-xl border border-belacan-200 hover:bg-belacan-50 text-xs font-bold text-belacan-800">
+                            This Month
+                        </button>
+                        <button onclick="shiftMonth(1)" class="p-2 rounded-xl border border-belacan-200 hover:bg-belacan-50 text-plum-700">
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                        <h3 id="monthly-label" class="ml-2 font-display text-base sm:text-lg font-extrabold text-plum-900"></h3>
+                    </div>
+                    <div id="monthly-summary-pills" class="flex items-center gap-2 flex-wrap text-xs"></div>
+                </div>
+
+                <div class="bg-white/95 rounded-2xl border border-belacan-200 overflow-hidden shadow-rose-sm">
+                    <!-- Weekday Header -->
+                    <div class="grid grid-cols-7 bg-belacan-50 border-b border-belacan-200 text-center text-[10px] sm:text-xs font-bold text-plum-500 py-2.5 sm:py-3">
+                        <div>Mon</div>
+                        <div class="text-belacan-700">Tue<span class="hidden sm:inline"> (OP)</span></div>
+                        <div class="text-belacan-700">Wed<span class="hidden sm:inline"> (OP)</span></div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+                        <div>Sun</div>
+                    </div>
+                    <!-- Calendar Cells -->
+                    <div id="monthly-grid" class="grid grid-cols-7 divide-x divide-y divide-belacan-100"></div>
+                </div>
+            </section>
+
+            <!-- ========== 4. YEARLY VIEW ========== -->
+            <section id="view-yearly" class="app-view hidden space-y-5">
+                <div class="bg-white/95 rounded-2xl border border-belacan-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-rose-sm">
+                    <div class="flex items-center gap-2">
+                        <button onclick="shiftYear(-1)" class="p-2 rounded-xl border border-belacan-200 hover:bg-belacan-50 text-plum-700">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        </button>
+                        <span id="yearly-label" class="px-4 py-1.5 font-display text-lg font-extrabold text-plum-900"></span>
+                        <button onclick="shiftYear(1)" class="p-2 rounded-xl border border-belacan-200 hover:bg-belacan-50 text-plum-700">
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <div id="yearly-kpi-strip" class="flex items-center gap-2 flex-wrap text-xs"></div>
+                </div>
+
+                <div id="yearly-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+            </section>
+
+            <!-- ========== 5. HOD EXECUTIVE DASHBOARD ========== -->
+            <section id="view-dashboard" class="app-view hidden space-y-5">
+                <!-- Executive Header Banner -->
+                <div class="rounded-2xl bg-belacan-gradient text-white p-5 sm:p-6 shadow-rose-md flex flex-col lg:flex-row lg:items-center justify-between gap-4 no-print">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 text-[11px] font-bold tracking-wide uppercase mb-2">
+                            <i data-lucide="award" class="w-3.5 h-3.5"></i>
+                            <span>HOD Executive Overview</span>
+                        </div>
+                        <h3 class="font-display text-xl font-extrabold tracking-tight">O&amp;G Echocardiogram Performance &amp; Census</h3>
+                        <p id="dashboard-period-badge" class="text-xs text-belacan-100 mt-1 font-medium"></p>
+                    </div>
+                    <div class="flex items-center gap-2.5 flex-wrap">
+                        <button onclick="exportCensusPDF()" class="px-4 py-2.5 rounded-xl bg-white text-belacan-900 hover:bg-belacan-50 font-display text-xs font-extrabold flex items-center gap-2 shadow-sm transition-all">
+                            <i data-lucide="file-down" class="w-4 h-4 text-belacan-600"></i>
+                            <span>Save Census as PDF</span>
+                        </button>
+                        <button onclick="printCurrentReport()" class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/25 text-white font-display text-xs font-bold flex items-center gap-2 transition-all">
+                            <i data-lucide="printer" class="w-4 h-4"></i>
+                            <span>Print Report</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Period Filter Bar -->
+                <div class="bg-white/95 rounded-2xl border border-belacan-200 p-3.5 flex flex-wrap items-center justify-between gap-3 shadow-rose-sm no-print">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-xs font-bold text-plum-500 uppercase tracking-wider mr-1">Analytics Period:</span>
+                        <div class="inline-flex flex-wrap rounded-xl bg-belacan-50 border border-belacan-200/80 p-1">
+                            <button onclick="setAnalyticsPeriod('daily')" data-period="daily" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Daily</button>
+                            <button onclick="setAnalyticsPeriod('weekly')" data-period="weekly" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Weekly</button>
+                            <button onclick="setAnalyticsPeriod('monthly')" data-period="monthly" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Monthly</button>
+                            <button onclick="setAnalyticsPeriod('yearly')" data-period="yearly" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Yearly</button>
+                            <button onclick="setAnalyticsPeriod('demo30')" data-period="demo30" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Nov 2026 – Jan 2027 (All 30 Demo)</button>
+                            <button onclick="setAnalyticsPeriod('custom')" data-period="custom" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Custom</button>
+                        </div>
+
+                        <div id="dashboard-custom-range" class="hidden items-center gap-2 ml-1">
+                            <input type="date" id="analytics-start-date" onchange="renderDashboardAndCensus()" class="px-2.5 py-1.5 rounded-xl border border-belacan-200 text-xs font-semibold text-plum-900" />
+                            <span class="text-xs text-plum-400">to</span>
+                            <input type="date" id="analytics-end-date" onchange="renderDashboardAndCensus()" class="px-2.5 py-1.5 rounded-xl border border-belacan-200 text-xs font-semibold text-plum-900" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Executive KPI Cards -->
+                <div id="hod-kpi-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+
+                <!-- Charts Row 1: Volume Trend + Source of Referral -->
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+                    <div class="xl:col-span-2 bg-white/95 rounded-2xl border border-belacan-200 p-5 shadow-rose-sm print-break-inside-avoid">
+                        <h3 class="font-display text-sm font-extrabold text-plum-900">ECHO Volume Trend (Outpatient vs Ad Hoc)</h3>
+                        <p class="text-xs text-plum-500 mb-4">Tue/Wed 2:00 PM Outpatient sessions vs Clinic/Ward Ad Hoc cases</p>
+                        <div class="h-64 relative">
+                            <canvas id="chart-volume-trend"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white/95 rounded-2xl border border-belacan-200 p-5 shadow-rose-sm print-break-inside-avoid">
+                        <h3 class="font-display text-sm font-extrabold text-plum-900 mb-1">Source of Referral</h3>
+                        <p class="text-xs text-plum-500 mb-4">PAC, ED, Clinic, ICU, HDU/LR &amp; Ward distribution</p>
+                        <div class="h-64 relative flex items-center justify-center">
+                            <canvas id="chart-referral"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 2: Top Clinical Indications + Requesting Department -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    <div class="bg-white/95 rounded-2xl border border-belacan-200 p-5 shadow-rose-sm print-break-inside-avoid">
+                        <h3 class="font-display text-sm font-extrabold text-plum-900 mb-1">Top Clinical Indications</h3>
+                        <p class="text-xs text-plum-500 mb-4">Primary maternal &amp; gynae cardiac indications</p>
+                        <div class="h-72 relative">
+                            <canvas id="chart-indication"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white/95 rounded-2xl border border-belacan-200 p-5 shadow-rose-sm print-break-inside-avoid">
+                        <h3 class="font-display text-sm font-extrabold text-plum-900 mb-1">Requesting Department</h3>
+                        <p class="text-xs text-plum-500 mb-4">Inter-departmental ECHO referral breakdown</p>
+                        <div class="h-72 relative">
+                            <canvas id="chart-department"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row 3: Ordering Pakar + Booked By Staff Role -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <div class="lg:col-span-2 bg-white/95 rounded-2xl border border-belacan-200 p-5 shadow-rose-sm print-break-inside-avoid">
+                        <h3 class="font-display text-sm font-extrabold text-plum-900 mb-1">Ordered By (Pakar / Specialist)</h3>
+                        <p class="text-xs text-plum-500 mb-4">ECHO volume ordered per specialist</p>
+                        <div class="h-64 relative">
+                            <canvas id="chart-pakar"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white/95 rounded-2xl border border-belacan-200 p-5 shadow-rose-sm print-break-inside-avoid flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-display text-sm font-extrabold text-plum-900 mb-1">Bookings by Staff Role</h3>
+                            <p class="text-xs text-plum-500 mb-4">Doctor, Staff Nurse &amp; Medical Assistant logs</p>
+                            <div class="h-44 relative flex items-center justify-center">
+                                <canvas id="chart-role"></canvas>
+                            </div>
+                        </div>
+                        <div id="role-breakdown-summary" class="mt-4 pt-3 border-t border-belacan-100 grid grid-cols-3 gap-2 text-center text-xs"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== 6. CENSUS & REPORTS VIEW ========== -->
+            <section id="view-census" class="app-view hidden space-y-5">
+                <!-- Controls & Export Header -->
+                <div class="bg-white/95 rounded-2xl border border-belacan-200 p-4 space-y-4 shadow-rose-sm no-print">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-xs font-bold text-plum-500 uppercase tracking-wider">Census Period:</span>
+                            <div class="inline-flex flex-wrap rounded-xl bg-belacan-50 border border-belacan-200/80 p-1">
+                                <button onclick="setAnalyticsPeriod('daily')" data-period="daily" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Daily</button>
+                                <button onclick="setAnalyticsPeriod('weekly')" data-period="weekly" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Weekly</button>
+                                <button onclick="setAnalyticsPeriod('monthly')" data-period="monthly" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Monthly</button>
+                                <button onclick="setAnalyticsPeriod('yearly')" data-period="yearly" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Yearly</button>
+                                <button onclick="setAnalyticsPeriod('demo30')" data-period="demo30" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Nov 2026 – Jan 2027 (All 30 Demo)</button>
+                                <button onclick="setAnalyticsPeriod('custom')" data-period="custom" class="period-btn px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Custom</button>
+                            </div>
+                            <div id="census-custom-range" class="hidden items-center gap-2">
+                                <input type="date" id="census-start-date" onchange="syncCustomDatesFromCensus()" class="px-2.5 py-1.5 rounded-xl border border-belacan-200 text-xs font-semibold text-plum-900" />
+                                <span class="text-xs text-plum-400">to</span>
+                                <input type="date" id="census-end-date" onchange="syncCustomDatesFromCensus()" class="px-2.5 py-1.5 rounded-xl border border-belacan-200 text-xs font-semibold text-plum-900" />
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button onclick="exportCensusPDF()" class="px-4 py-2 rounded-xl bg-belacan-btn text-white font-display text-xs font-bold flex items-center gap-1.5 shadow-rose-sm hover:shadow-rose-md transition-all">
+                                <i data-lucide="file-down" class="w-4 h-4"></i>
+                                <span>Save Census as PDF</span>
+                            </button>
+                            <button onclick="printCurrentReport()" class="px-4 py-2 rounded-xl border border-belacan-200 bg-white hover:bg-belacan-50 text-belacan-900 font-display text-xs font-bold flex items-center gap-1.5 transition-colors">
+                                <i data-lucide="printer" class="w-4 h-4 text-belacan-600"></i>
+                                <span>Print Report</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search & Multi-Filters -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 pt-2 border-t border-belacan-100">
+                        <div class="relative lg:col-span-2">
+                            <i data-lucide="search" class="w-4 h-4 text-plum-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                            <input type="text" id="census-search" oninput="renderCensusTable()" placeholder="Search Patient Name, MRN, Pakar, Indication, Staff..." class="w-full pl-9 pr-3 py-2 rounded-xl border border-belacan-200 text-xs focus:outline-none focus:ring-2 focus:ring-belacan-500/25 focus:border-belacan-600" />
+                        </div>
+                        <select id="census-filter-type" onchange="renderCensusTable()" class="px-3 py-2 rounded-xl border border-belacan-200 text-xs bg-white text-plum-900 focus:outline-none focus:border-belacan-600">
+                            <option value="">All Booking Types</option>
+                            <option value="Outpatient">Outpatient (Tue/Wed 2pm)</option>
+                            <option value="Ad Hoc">Ad Hoc (Clinic/Ward)</option>
+                        </select>
+                        <select id="census-filter-status" onchange="renderCensusTable()" class="px-3 py-2 rounded-xl border border-belacan-200 text-xs bg-white text-plum-900 focus:outline-none focus:border-belacan-600">
+                            <option value="">All Statuses</option>
+                            <option value="Booked">Booked</option>
+                            <option value="Completed">Completed</option>
+                            <option value="DNA">DNA (Did Not Attend)</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                        <select id="census-filter-dept" onchange="renderCensusTable()" class="px-3 py-2 rounded-xl border border-belacan-200 text-xs bg-white text-plum-900 focus:outline-none focus:border-belacan-600">
+                            <option value="">All Requesting Depts</option>
+                            <option value="O&G - Obstetrics">O&amp;G - Obstetrics</option>
+                            <option value="O&G - Gynaecology">O&amp;G - Gynaecology</option>
+                            <option value="MFM Unit">MFM Unit</option>
+                            <option value="Anaesthesiology / ICU">Anaesthesiology / ICU</option>
+                            <option value="Internal Medicine">Internal Medicine</option>
+                            <option value="Cardiology Co-management">Cardiology Co-management</option>
+                            <option value="Gynae-Oncology">Gynae-Oncology</option>
+                            <option value="Emergency Dept (ED)">Emergency Dept (ED)</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Census Summary Strip -->
+                <div id="census-summary-strip" class="grid grid-cols-2 sm:grid-cols-5 gap-2.5 sm:gap-3"></div>
+
+                <!-- Mobile Census Card List (< md) -->
+                <div id="census-mobile-cards" class="md:hidden space-y-3 no-print"></div>
+
+                <!-- Desktop & Print Census Data Table (md+ and Print) -->
+                <div class="hidden md:block print-only-table bg-white/95 rounded-2xl border border-belacan-200 overflow-hidden shadow-rose-sm">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-belacan-50 border-b border-belacan-200 text-[11px] font-bold uppercase tracking-wider text-plum-500">
+                                    <th class="py-3 px-4">Date &amp; Time</th>
+                                    <th class="py-3 px-3">Type</th>
+                                    <th class="py-3 px-3">Patient &amp; MRN</th>
+                                    <th class="py-3 px-3">Source of Referral</th>
+                                    <th class="py-3 px-3">Clinical Indication</th>
+                                    <th class="py-3 px-3">Req. Dept</th>
+                                    <th class="py-3 px-3">Ordered By (Pakar)</th>
+                                    <th class="py-3 px-3">Booked By</th>
+                                    <th class="py-3 px-3">Status</th>
+                                    <th class="py-3 px-4 text-right no-print">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="census-table-body" class="divide-y divide-belacan-100 text-xs"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ==================== MODAL: STAFF PROFILE (DR / NURSE / MA) ==================== -->
+    <div id="staff-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-plum-900/55 backdrop-blur-xs p-0 sm:p-4 no-print">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-rose-lg border border-belacan-200 w-full max-w-md overflow-hidden animate-modal">
+            <div class="px-6 py-4 bg-belacan-gradient text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center">
+                        <i data-lucide="user-check" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-display text-base font-extrabold">Staff Profile Switcher</h3>
+                        <p class="text-[11px] text-belacan-100">Doctor, Staff Nurse &amp; Medical Assistant access</p>
+                    </div>
+                </div>
+                <button onclick="closeStaffModal()" class="p-1.5 rounded-lg text-white/80 hover:bg-white/15">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <form id="staff-form" onsubmit="saveStaffProfile(event)" class="p-6 space-y-4 safe-bottom">
+                <div>
+                    <label class="block text-xs font-bold text-plum-700 mb-2">Select Your Role</label>
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="staffRole" value="Dr" class="peer sr-only" checked />
+                            <div class="py-2.5 px-3 rounded-xl border border-belacan-200 text-center text-xs font-bold text-plum-500 peer-checked:border-belacan-600 peer-checked:bg-belacan-100 peer-checked:text-belacan-900 transition-all">
+                                Doctor (Dr)
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="staffRole" value="Nurse" class="peer sr-only" />
+                            <div class="py-2.5 px-3 rounded-xl border border-belacan-200 text-center text-xs font-bold text-plum-500 peer-checked:border-belacan-600 peer-checked:bg-belacan-100 peer-checked:text-belacan-900 transition-all">
+                                Staff Nurse
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="staffRole" value="MA" class="peer sr-only" />
+                            <div class="py-2.5 px-3 rounded-xl border border-belacan-200 text-center text-xs font-bold text-plum-500 peer-checked:border-belacan-600 peer-checked:bg-belacan-100 peer-checked:text-belacan-900 transition-all">
+                                MA (PPP)
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="staff-name-input" class="block text-xs font-bold text-plum-700 mb-1.5">Your Full Name</label>
+                    <input type="text" id="staff-name-input" required placeholder="e.g., Dr. Amirul / SN Farah / MA Hakim" class="w-full px-3.5 py-2.5 rounded-xl border border-belacan-200 text-sm text-plum-900 focus:outline-none focus:ring-2 focus:ring-belacan-500/25 focus:border-belacan-600" />
+                    <p class="text-[11px] text-plum-400 mt-1.5">Auto-fills "Booked By" on every new ECHO booking you create.</p>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeStaffModal()" class="px-4 py-2 rounded-xl border border-belacan-200 text-xs font-bold text-plum-500 hover:bg-belacan-50">Cancel</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-belacan-btn text-white font-display text-xs font-bold shadow-rose-sm">Save Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: ADD / EDIT ECHO BOOKING ==================== -->
+    <div id="booking-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-plum-900/55 backdrop-blur-xs p-0 sm:p-4 overflow-y-auto no-print">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-rose-lg border border-belacan-200 w-full max-w-2xl sm:my-auto animate-modal overflow-hidden">
+            <!-- Modal Header -->
+            <div class="px-5 sm:px-6 py-4 bg-belacan-gradient text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center">
+                        <i data-lucide="heart-pulse" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 id="booking-modal-title" class="font-display text-base font-extrabold">New ECHO Booking</h3>
+                        <p class="text-[11px] text-belacan-100">O&amp;G Echocardiogram Scheduling</p>
+                    </div>
+                </div>
+                <button onclick="closeBookingModal()" class="p-2 rounded-lg text-white/80 hover:bg-white/15">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Booking Form -->
+            <form id="booking-form" onsubmit="saveBooking(event)" class="p-4 sm:p-6 space-y-4 sm:space-y-5 max-h-[84vh] sm:max-h-[80vh] overflow-y-auto safe-bottom">
+                <input type="hidden" id="booking-id" />
+
+                <!-- Date, Type & Interactive 6-Slot Picker -->
+                <div class="p-4 rounded-2xl bg-belacan-50 border border-belacan-200 space-y-3.5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                            <label for="f-date" class="block text-xs font-bold text-plum-700 mb-1">ECHO Date *</label>
+                            <input type="date" id="f-date" required onchange="onBookingDateOrTypeChange()" class="w-full px-3 py-2 rounded-xl border border-belacan-200 bg-white text-sm font-semibold text-plum-900 focus:outline-none focus:ring-2 focus:ring-belacan-500/25 focus:border-belacan-600" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-plum-700 mb-1">Booking Type *</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" id="btn-type-outpatient" onclick="selectBookingType('Outpatient')" class="py-2 px-3 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+                                    <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                                    <span>Outpatient</span>
+                                </button>
+                                <button type="button" id="btn-type-adhoc" onclick="selectBookingType('Ad Hoc')" class="py-2 px-3 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-1.5">
+                                    <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                                    <span>Ad Hoc (Anytime)</span>
+                                </button>
+                            </div>
+                            <input type="hidden" id="f-type" value="Outpatient" />
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Scheduling Rule Notice -->
+                    <div id="booking-rule-banner" class="text-xs px-3.5 py-2.5 rounded-xl flex items-start gap-2"></div>
+
+                    <!-- Visual 6-Slot Picker (Outpatient Tue/Wed 2:00 PM) -->
+                    <div id="slot-selector-wrapper">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-xs font-bold text-plum-700">Select Outpatient Slot (Tue/Wed 2:00 PM — Max 6) *</label>
+                            <span id="slot-availability-pill" class="text-[11px] font-bold text-belacan-700"></span>
+                        </div>
+                        <input type="hidden" id="f-slot" value="1" />
+                        <div id="visual-slot-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+                    </div>
+
+                    <!-- Unrestricted 24-Hour Time Input + Presets (Ad Hoc: Any Day, Any Time) -->
+                    <div id="adhoc-time-wrapper" class="hidden space-y-2.5">
+                        <div class="flex items-center justify-between gap-2 flex-wrap">
+                            <label for="f-time" class="block text-xs font-bold text-plum-700">Ad Hoc ECHO Time (24-Hour Clock: 00:00 – 23:59) *</label>
+                            <span class="px-2 py-0.5 rounded-md bg-coral-50 border border-coral-200 text-[10px] font-extrabold text-coral-700">Ad Hoc &middot; Any Day / Any Time</span>
+                        </div>
+                        <input type="time" id="f-time" value="10:00" class="w-full px-3 py-2 rounded-xl border border-belacan-200 bg-white text-sm font-semibold text-plum-900 focus:outline-none focus:ring-2 focus:ring-belacan-500/25 focus:border-belacan-600" />
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="text-[10px] font-bold text-plum-400 uppercase tracking-wider mr-1">Quick Pick:</span>
+                            <button type="button" onclick="setAdHocTimeNow()" class="px-2.5 py-1 rounded-lg bg-belacan-100 hover:bg-belacan-200 text-belacan-800 text-[11px] font-bold transition-colors">Now</button>
+                            <button type="button" onclick="setAdHocTimePreset('09:00')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-coral-50 border border-belacan-200 text-plum-700 text-[11px] font-semibold transition-colors">Morning 09:00</button>
+                            <button type="button" onclick="setAdHocTimePreset('12:00')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-coral-50 border border-belacan-200 text-plum-700 text-[11px] font-semibold transition-colors">Midday 12:00</button>
+                            <button type="button" onclick="setAdHocTimePreset('15:00')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-coral-50 border border-belacan-200 text-plum-700 text-[11px] font-semibold transition-colors">Afternoon 15:00</button>
+                            <button type="button" onclick="setAdHocTimePreset('19:00')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-coral-50 border border-belacan-200 text-plum-700 text-[11px] font-semibold transition-colors">Evening 19:00</button>
+                            <button type="button" onclick="setAdHocTimePreset('23:00')" class="px-2.5 py-1 rounded-lg bg-white hover:bg-coral-50 border border-belacan-200 text-plum-700 text-[11px] font-semibold transition-colors">On-Call 23:00</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Patient Name & MRN -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label for="f-name" class="block text-xs font-bold text-plum-700 mb-1">Patient Full Name *</label>
+                        <input type="text" id="f-name" required placeholder="e.g., Nurul Aina binti Mohd Razak" class="w-full px-3.5 py-2 rounded-xl border border-belacan-200 text-sm text-plum-900 focus:outline-none focus:ring-2 focus:ring-belacan-500/25 focus:border-belacan-600" />
+                    </div>
+                    <div>
+                        <label for="f-mrn" class="block text-xs font-bold text-plum-700 mb-1">MRN / Registration No. *</label>
+                        <input type="text" id="f-mrn" required placeholder="e.g., MRN-261101" class="w-full px-3.5 py-2 rounded-xl border border-belacan-200 text-sm font-mono uppercase text-plum-900 focus:outline-none focus:ring-2 focus:ring-belacan-500/25 focus:border-belacan-600" />
+                    </div>
+                </div>
+
+                <!-- Source of Referral & Requesting Department -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label for="f-referral" class="block text-xs font-bold text-plum-700 mb-1">Source of Referral *</label>
+                        <select id="f-referral" required onchange="toggleCustomInput('f-referral', 'f-referral-custom')" class="w-full px-3 py-2 rounded-xl border border-belacan-200 bg-white text-sm text-plum-900 focus:outline-none focus:border-belacan-600">
+                            <option value="PAC">PAC</option>
+                            <option value="ED">ED</option>
+                            <option value="CLINIC">CLINIC</option>
+                            <option value="ICU">ICU</option>
+                            <option value="HDU/LR">HDU/LR</option>
+                            <option value="WARD 6A">WARD 6A</option>
+                            <option value="WARD 7A">WARD 7A</option>
+                            <option value="WARD 7B">WARD 7B</option>
+                            <option value="Other">Other (Specify)</option>
+                        </select>
+                        <input type="text" id="f-referral-custom" placeholder="Specify referral source..." class="hidden mt-2 w-full px-3 py-2 rounded-xl border border-belacan-200 text-xs focus:outline-none focus:border-belacan-600" />
+                    </div>
+                    <div>
+                        <label for="f-dept" class="block text-xs font-bold text-plum-700 mb-1">Requesting Department *</label>
+                        <select id="f-dept" required onchange="toggleCustomInput('f-dept', 'f-dept-custom')" class="w-full px-3 py-2 rounded-xl border border-belacan-200 bg-white text-sm text-plum-900 focus:outline-none focus:border-belacan-600">
+                            <option value="O&G - Obstetrics">O&amp;G - Obstetrics</option>
+                            <option value="O&G - Gynaecology">O&amp;G - Gynaecology</option>
+                            <option value="MFM Unit">MFM Unit</option>
+                            <option value="Anaesthesiology / ICU">Anaesthesiology / ICU</option>
+                            <option value="Internal Medicine">Internal Medicine</option>
+                            <option value="Cardiology Co-management">Cardiology Co-management</option>
+                            <option value="Gynae-Oncology">Gynae-Oncology</option>
+                            <option value="Emergency Dept (ED)">Emergency Dept (ED)</option>
+                            <option value="Other">Other (Specify)</option>
+                        </select>
+                        <input type="text" id="f-dept-custom" placeholder="Specify requesting department..." class="hidden mt-2 w-full px-3 py-2 rounded-xl border border-belacan-200 text-xs focus:outline-none focus:border-belacan-600" />
+                    </div>
+                </div>
+
+                <!-- Clinical Indication -->
+                <div>
+                    <label for="f-indication" class="block text-xs font-bold text-plum-700 mb-1">Clinical Indication *</label>
+                    <select id="f-indication" required onchange="toggleCustomInput('f-indication', 'f-indication-custom')" class="w-full px-3 py-2 rounded-xl border border-belacan-200 bg-white text-sm text-plum-900 focus:outline-none focus:border-belacan-600">
+                        <option value="Gestational Hypertension">Gestational Hypertension</option>
+                        <option value="Pre-eclampsia / Severe PIH">Pre-eclampsia / Severe PIH</option>
+                        <option value="Chronic Hypertension in Pregnancy">Chronic Hypertension in Pregnancy</option>
+                        <option value="Peripartum Cardiomyopathy (PPCM) Assessment">Peripartum Cardiomyopathy (PPCM) Assessment</option>
+                        <option value="Rheumatic Heart Disease in Pregnancy">Rheumatic Heart Disease in Pregnancy</option>
+                        <option value="Congenital Heart Disease in Pregnancy">Congenital Heart Disease in Pregnancy</option>
+                        <option value="Maternal Murmur / Palpitations">Maternal Murmur / Palpitations</option>
+                        <option value="Twin Pregnancy / Maternal Tachycardia">Twin Pregnancy / Maternal Tachycardia</option>
+                        <option value="Pre-op Gynae Oncology Assessment">Pre-op Gynae Oncology Assessment</option>
+                        <option value="Pre-op Fibroid / Anaesthetic Clearance">Pre-op Fibroid / Anaesthetic Clearance</option>
+                        <option value="Suspected Pulmonary Embolism / SOB">Suspected Pulmonary Embolism / SOB</option>
+                        <option value="Other">Other (Specify)</option>
+                    </select>
+                    <input type="text" id="f-indication-custom" placeholder="Specify clinical indication..." class="hidden mt-2 w-full px-3 py-2 rounded-xl border border-belacan-200 text-xs focus:outline-none focus:border-belacan-600" />
+                </div>
+
+                <!-- Ordering Specialist (Pakar) & Booked By -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label for="f-pakar-select" class="block text-xs font-bold text-plum-700 mb-1">Ordered By (Pakar / Specialist) *</label>
+                        <select id="f-pakar-select" required onchange="toggleCustomInput('f-pakar-select', 'f-pakar')" class="w-full px-3 py-2 rounded-xl border border-belacan-200 bg-white text-sm text-plum-900 focus:outline-none focus:border-belacan-600">
+                            <option value="Dr. Norazlina (Pakar O&G)">Dr. Norazlina (Pakar O&amp;G)</option>
+                            <option value="Dr. Kavitha (Pakar MFM)">Dr. Kavitha (Pakar MFM)</option>
+                            <option value="Dr. Lim Wei Jian (Pakar Gynae-Onco)">Dr. Lim Wei Jian (Pakar Gynae-Onco)</option>
+                            <option value="Dr. Faridah (Pakar O&G)">Dr. Faridah (Pakar O&amp;G)</option>
+                            <option value="Dr. Syafiqah (Pakar O&G)">Dr. Syafiqah (Pakar O&amp;G)</option>
+                            <option value="Dr. Ravindran (Pakar O&G)">Dr. Ravindran (Pakar O&amp;G)</option>
+                            <option value="Other">Other Pakar (Specify Name)</option>
+                        </select>
+                        <input type="text" id="f-pakar" placeholder="Enter Pakar / Specialist name..." class="hidden mt-2 w-full px-3 py-2 rounded-xl border border-belacan-200 text-xs text-plum-900 focus:outline-none focus:border-belacan-600" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-plum-700 mb-1">Booked By (Staff Name &amp; Role) *</label>
+                        <div class="flex gap-2">
+                            <select id="f-booked-role" required class="w-24 px-2.5 py-2 rounded-xl border border-belacan-200 bg-white text-xs font-bold text-plum-900 focus:outline-none focus:border-belacan-600">
+                                <option value="Dr">Dr</option>
+                                <option value="Nurse">Nurse</option>
+                                <option value="MA">MA</option>
+                            </select>
+                            <input type="text" id="f-booked-by" required placeholder="e.g., Dr. Amirul / SN Farah" class="flex-1 px-3 py-2 rounded-xl border border-belacan-200 text-sm text-plum-900 focus:outline-none focus:ring-2 focus:ring-belacan-500/25 focus:border-belacan-600" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status & Remarks -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                    <div>
+                        <label for="f-status" class="block text-xs font-bold text-plum-700 mb-1">Booking Status *</label>
+                        <select id="f-status" required class="w-full px-3 py-2 rounded-xl border border-belacan-200 bg-white text-sm font-semibold text-plum-900 focus:outline-none focus:border-belacan-600">
+                            <option value="Booked">Booked</option>
+                            <option value="Completed">Completed</option>
+                            <option value="DNA">DNA (Did Not Attend)</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label for="f-remarks" class="block text-xs font-bold text-plum-700 mb-1">Remarks / Clinical Notes</label>
+                        <input type="text" id="f-remarks" placeholder="e.g., G2P1 at 34 wks, BP 160/100, urgent bedside ECHO" class="w-full px-3.5 py-2 rounded-xl border border-belacan-200 text-sm text-plum-900 focus:outline-none focus:ring-2 focus:ring-belacan-500/25 focus:border-belacan-600" />
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-belacan-100">
+                    <button type="button" onclick="closeBookingModal()" class="px-4 py-2.5 rounded-xl border border-belacan-200 text-xs font-bold text-plum-500 hover:bg-belacan-50">Cancel</button>
+                    <button type="submit" id="booking-submit-btn" class="px-6 py-2.5 rounded-xl bg-belacan-btn disabled:opacity-50 disabled:cursor-not-allowed text-white font-display text-xs font-bold shadow-rose-sm flex items-center gap-2">
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                        <span>Save ECHO Booking</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: VIEW PATIENT BOOKING DETAILS ==================== -->
+    <div id="detail-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-plum-900/55 backdrop-blur-xs p-0 sm:p-4 no-print">
+        <div class="bg-white rounded-t-3xl sm:rounded-2xl shadow-rose-lg border border-belacan-200 w-full max-w-lg animate-modal overflow-hidden max-h-[90vh] flex flex-col">
+            <div class="px-5 sm:px-6 py-4 bg-belacan-50 border-b border-belacan-200 flex items-center justify-between">
+                <h3 class="font-display text-base font-extrabold text-plum-900">ECHO Booking Details</h3>
+                <button onclick="closeDetailModal()" class="p-2 rounded-lg text-plum-400 hover:bg-belacan-100">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div id="detail-modal-body" class="p-5 sm:p-6 space-y-4 text-sm overflow-y-auto"></div>
+            <div id="detail-modal-footer" class="px-5 sm:px-6 py-3.5 bg-belacan-50/70 border-t border-belacan-200 flex items-center justify-between gap-2 safe-bottom"></div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: CUSTOM CONFIRMATION DIALOG ==================== -->
+    <div id="confirm-modal" class="fixed inset-0 z-[60] hidden items-center justify-center bg-plum-900/55 backdrop-blur-xs p-4 no-print">
+        <div class="bg-white rounded-2xl shadow-rose-lg border border-belacan-200 w-full max-w-sm p-6 animate-modal">
+            <div class="flex items-start gap-3 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-belacan-100 text-belacan-700 flex items-center justify-center shrink-0">
+                    <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 id="confirm-title" class="font-display text-sm font-extrabold text-plum-900">Confirm Action</h3>
+                    <p id="confirm-message" class="text-xs text-plum-500 mt-1 leading-relaxed"></p>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2">
+                <button onclick="closeConfirmModal()" class="px-4 py-2 rounded-xl border border-belacan-200 text-xs font-bold text-plum-500 hover:bg-belacan-50">Cancel</button>
+                <button id="confirm-ok-btn" class="px-4 py-2 rounded-xl bg-belacan-btn text-white text-xs font-bold">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== TOAST NOTIFICATION CONTAINER ==================== -->
+    <div id="toast-container" class="fixed bottom-20 md:bottom-5 right-4 sm:right-5 z-[70] flex flex-col gap-2 max-w-[calc(100vw-2rem)] sm:max-w-sm no-print"></div>
+
+    <!-- ==================== HIDDEN PDF TEMPLATE CONTAINER (FOR html2pdf.js) ==================== -->
+    <div id="pdf-export-wrapper" class="hidden"></div>
+
+    <!-- ==================== APPLICATION JAVASCRIPT + FIREBASE ==================== -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // =========================================================================
+        // 1. CONSTANTS & CONFIGURATION
+        // =========================================================================
+        const OUTPATIENT_SLOTS = [
+            { slot: 1, time: '14:00', label: 'Slot 1 — 2:00 PM', short: '2:00 PM' },
+            { slot: 2, time: '14:20', label: 'Slot 2 — 2:20 PM', short: '2:20 PM' },
+            { slot: 3, time: '14:40', label: 'Slot 3 — 2:40 PM', short: '2:40 PM' },
+            { slot: 4, time: '15:00', label: 'Slot 4 — 3:00 PM', short: '3:00 PM' },
+            { slot: 5, time: '15:20', label: 'Slot 5 — 3:20 PM', short: '3:20 PM' },
+            { slot: 6, time: '15:40', label: 'Slot 6 — 3:40 PM', short: '3:40 PM' },
+        ];
+        const MAX_OUTPATIENT_PER_DAY = 6;
+        const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const SHORT_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const LOCAL_STORAGE_KEY = 'og_echo_bookings_v4';
+        const STAFF_STORAGE_KEY = 'og_echo_staff_v2';
+
+        // =========================================================================
+        // 2. DATE & STRING HELPERS
+        // =========================================================================
+        function formatDateISO(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function parseDateISO(str) {
+            const [y, m, d] = str.split('-').map(Number);
+            return new Date(y, m - 1, d);
+        }
+
+        function isOutpatientDay(dateStr) {
+            const dow = parseDateISO(dateStr).getDay(); // 2 = Tue, 3 = Wed
+            return dow === 2 || dow === 3;
+        }
+
+        function getNextOutpatientDate(dateStr) {
+            const d = parseDateISO(dateStr);
+            for (let i = 1; i <= 7; i++) {
+                d.setDate(d.getDate() + 1);
+                if (d.getDay() === 2 || d.getDay() === 3) {
+                    return formatDateISO(d);
+                }
+            }
+            return dateStr;
+        }
+
+        function formatDisplayDate(dateStr) {
+            const d = parseDateISO(dateStr);
+            return `${DAY_NAMES[d.getDay()]}, ${d.getDate()} ${SHORT_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        function formatTime12h(timeStr) {
+            if (!timeStr) return '-';
+            const [hStr, mStr] = timeStr.split(':');
+            let h = parseInt(hStr, 10);
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            return `${h}:${mStr} ${ampm}`;
+        }
+
+        function getMondayOfWeek(dateStr) {
+            const d = parseDateISO(dateStr);
+            const day = d.getDay();
+            const diff = day === 0 ? -6 : 1 - day;
+            d.setDate(d.getDate() + diff);
+            return d;
+        }
+
+        function countTueWedInRange(startStr, endStr) {
+            let count = 0;
+            const cur = parseDateISO(startStr);
+            const end = parseDateISO(endStr);
+            while (cur <= end) {
+                const dow = cur.getDay();
+                if (dow === 2 || dow === 3) count++;
+                cur.setDate(cur.getDate() + 1);
+            }
+            return count;
+        }
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function getStatusBadgeClasses(status) {
+            switch (status) {
+                case 'Completed': return 'bg-clinical-50 text-clinical-600 border border-clinical-200';
+                case 'DNA': return 'bg-amber-100 text-amber-800 border border-amber-200';
+                case 'Cancelled': return 'bg-gray-100 text-gray-600 border border-gray-200';
+                default: return 'bg-belacan-100 text-belacan-800 border border-belacan-200';
+            }
+        }
+
+        // =========================================================================
+        // 3. APPLICATION STATE
+        // =========================================================================
+        const DEFAULT_DEMO_DATE = '2026-11-24'; // Tuesday, 24 Nov 2026
+
+        const state = {
+            currentView: 'daily',
+            selectedDate: DEFAULT_DEMO_DATE,
+            selectedMonth: 10, // November (0-indexed)
+            selectedYear: 2026,
+            analyticsPeriod: 'demo30',
+            customStartDate: '2026-11-01',
+            customEndDate: '2027-01-31',
+            bookings: [],
+            staff: {
+                role: 'Dr',
+                name: 'Dr. Amirul',
+                configured: false
+            },
+            useCloud: false,
+            user: null,
+            seededOnce: false,
+            charts: {}
+        };
+        window.state = state;
+
+        // =========================================================================
+        // 4. DETERMINISTIC 30 MALAYSIAN O&G DUMMY RECORDS (NOV 2026 – JAN 2027)
+        // =========================================================================
+        const DEMO_30_RECORDS = [
+            // ---- NOVEMBER 2026 (10 Records) ----
+            { id: 'demo-nov26-01', date: '2026-11-03', bookingType: 'Outpatient', slotNumber: 1, time: '14:00', patientName: 'Nurul Aina binti Mohd Razak', mrn: 'MRN-261101', sourceOfReferral: 'CLINIC', requestingDept: 'O&G - Obstetrics', indication: 'Gestational Hypertension', orderedByPakar: 'Dr. Norazlina (Pakar O&G)', bookedBy: 'Dr. Amirul', bookedByRole: 'Dr', status: 'Completed', remarks: 'G2P1 at 32 wks, routine baseline ECHO' },
+            { id: 'demo-nov26-02', date: '2026-11-03', bookingType: 'Outpatient', slotNumber: 2, time: '14:20', patientName: 'Tan Mei Ling', mrn: 'MRN-261102', sourceOfReferral: 'CLINIC', requestingDept: 'MFM Unit', indication: 'Rheumatic Heart Disease in Pregnancy', orderedByPakar: 'Dr. Kavitha (Pakar MFM)', bookedBy: 'SN Farah', bookedByRole: 'Nurse', status: 'Completed', remarks: 'Known mild MS, 2nd trimester surveillance' },
+            { id: 'demo-nov26-03', date: '2026-11-04', bookingType: 'Outpatient', slotNumber: 1, time: '14:00', patientName: 'Priya a/p Subramaniam', mrn: 'MRN-261103', sourceOfReferral: 'CLINIC', requestingDept: 'O&G - Gynaecology', indication: 'Pre-op Gynae Oncology Assessment', orderedByPakar: 'Dr. Lim Wei Jian (Pakar Gynae-Onco)', bookedBy: 'MA Hakim', bookedByRole: 'MA', status: 'Completed', remarks: 'Pre-op cardiac clearance for staging laparotomy' },
+            { id: 'demo-nov26-04', date: '2026-11-06', bookingType: 'Ad Hoc', slotNumber: null, time: '10:30', patientName: 'Siti Hajar binti Ismail', mrn: 'MRN-261104', sourceOfReferral: 'WARD 6A', requestingDept: 'O&G - Obstetrics', indication: 'Pre-eclampsia / Severe PIH', orderedByPakar: 'Dr. Faridah (Pakar O&G)', bookedBy: 'Dr. Nadiah', bookedByRole: 'Dr', status: 'Completed', remarks: 'BP 165/105 on IV Labetalol, ward bedside ECHO' },
+            { id: 'demo-nov26-05', date: '2026-11-10', bookingType: 'Outpatient', slotNumber: 1, time: '14:00', patientName: 'Chong Siew Fen', mrn: 'MRN-261105', sourceOfReferral: 'CLINIC', requestingDept: 'O&G - Obstetrics', indication: 'Maternal Murmur / Palpitations', orderedByPakar: 'Dr. Syafiqah (Pakar O&G)', bookedBy: 'SN Aisyah', bookedByRole: 'Nurse', status: 'DNA', remarks: 'Patient did not attend; to reschedule via ANC' },
+            { id: 'demo-nov26-06', date: '2026-11-14', bookingType: 'Ad Hoc', slotNumber: null, time: '22:15', patientName: 'Dayang Nurul Husna', mrn: 'MRN-261106', sourceOfReferral: 'HDU/LR', requestingDept: 'O&G - Obstetrics', indication: 'Peripartum Cardiomyopathy (PPCM) Assessment', orderedByPakar: 'Dr. Norazlina (Pakar O&G)', bookedBy: 'Dr. Danial', bookedByRole: 'Dr', status: 'Completed', remarks: 'Urgent on-call ECHO for acute dyspnoea post-delivery' },
+            { id: 'demo-nov26-07', date: '2026-11-18', bookingType: 'Outpatient', slotNumber: 1, time: '14:00', patientName: 'Kavithaa a/p Muniandy', mrn: 'MRN-261107', sourceOfReferral: 'CLINIC', requestingDept: 'MFM Unit', indication: 'Congenital Heart Disease in Pregnancy', orderedByPakar: 'Dr. Kavitha (Pakar MFM)', bookedBy: 'MA Faizal', bookedByRole: 'MA', status: 'Completed', remarks: 'Repaired VSD, joint MFM-Cardiology follow-up' },
+            { id: 'demo-nov26-08', date: '2026-11-24', bookingType: 'Outpatient', slotNumber: 1, time: '14:00', patientName: 'Norfarahin binti Zulkifli', mrn: 'MRN-261108', sourceOfReferral: 'CLINIC', requestingDept: 'O&G - Obstetrics', indication: 'Chronic Hypertension in Pregnancy', orderedByPakar: 'Dr. Ravindran (Pakar O&G)', bookedBy: 'SN Hidayah', bookedByRole: 'Nurse', status: 'Booked', remarks: 'Baseline LV function assessment at 24 wks' },
+            { id: 'demo-nov26-09', date: '2026-11-24', bookingType: 'Outpatient', slotNumber: 2, time: '14:20', patientName: 'Lim Kah Yee', mrn: 'MRN-261109', sourceOfReferral: 'PAC', requestingDept: 'O&G - Gynaecology', indication: 'Pre-op Fibroid / Anaesthetic Clearance', orderedByPakar: 'Dr. Lim Wei Jian (Pakar Gynae-Onco)', bookedBy: 'Dr. Amirul', bookedByRole: 'Dr', status: 'Booked', remarks: 'Planned TAHBSO for symptomatic fibroid' },
+            { id: 'demo-nov26-10', date: '2026-11-24', bookingType: 'Ad Hoc', slotNumber: null, time: '09:15', patientName: 'Rohana binti Ahmad', mrn: 'MRN-261110', sourceOfReferral: 'ICU', requestingDept: 'Anaesthesiology / ICU', indication: 'Suspected Pulmonary Embolism / SOB', orderedByPakar: 'Dr. Faridah (Pakar O&G)', bookedBy: 'SN Farah', bookedByRole: 'Nurse', status: 'Booked', remarks: 'Urgent RV strain assessment in ICU' },
+
+            // ---- DECEMBER 2026 (10 Records) ----
+            { id: 'demo-dec26-01', date: '2026-12-01', bookingType: 'Outpatient', slotNumber: 1, time: '14:00', patientName: 'Aisyah Humaira binti Salleh', mrn: 'MRN-261201', sourceOfReferral: 'CLINIC', requestingDept: 'O&G - Obstetrics', indication: 'Gestational Hypertension', orderedByPakar: 'Dr. Norazlina (Pakar O&G)', bookedBy: 'MA Hakim', bookedByRole: 'MA', status: 'Completed', remarks: 'G1P0 at 34 wks, on Methyldopa' },
+            { id: 'demo-dec26-02', date: '2026-12-02', bookingType: 'Outpatient', slotNumber: 1, time: '14:00', patientName: 'Wong Pei Shan', mrn: 'MRN-261202', sourceOfReferral: 'CLINIC', requestingDept: 'MFM Unit', indication: 'Twin Pregnancy / Maternal Tachycardia', orderedByPakar: 'Dr. Kavitha (Pakar MFM)', bookedBy: 'Dr. Nadiah', bookedByRole: 'Dr', status: 'Completed', remarks: 'DCDA twin pregnancy with persistent HR 118 bpm' },
+            { id: 'demo-dec26-03', date: '2026-12-04', bookingType: 'Ad Hoc', slotNumber: null, time: '02:30', patientName: 'Shalini a/p Balakrishnan', mrn: 'MRN-261203', sourceOfReferral: 'HDU/LR', requestingDept: 'O&G - Obstetrics', indication: 'Pre-eclampsia / Severe PIH', orderedByPakar: 'Dr. Syafiqah (Pakar O&G)', bookedBy: 'Dr. Danial', bookedByRole: 'Dr', status: 'Completed', remarks: 'Overnight urgent bedside ECHO on MgSO4 infusion' },
+            { id: 'demo-dec26-04', date: '2026-12-08', bookingType: 'Outpatient', slotNumber: 1, time: '14:00', patientName: 'Mastura binti Hassan', mrn: 'MRN-261204', sourceOfReferral: 'CLINIC', requestingDept: 'O&G - Gynaecology', indication: 'Pre-op Gynae Oncology Assessment', orderedByPakar: 'Dr. Lim Wei Jian (Pakar Gynae-Onco)', bookedBy: 'SN Aisyah', bookedByRole: 'Nurse', status: 'Completed', remarks: 'Pre-operative EF assessment prior to cytoreduction' },
+            { id: 'demo-dec26-05', date: '2026-12-09', bookingType: 'Outpatient', slotNumber: 2, time: '14:20', patientName: 'Lee Hui Min', mrn: 'MRN-261205', sourceOfReferral: 'PAC', requestingDept: 'O&G - Obstetrics', indication: 'Maternal Murmur / Palpitations', orderedByPakar: 'Dr. Ravindran (Pakar O&G)', bookedBy: 'MA Faizal', bookedByRole: 'MA', status: 'Cancelled', remarks: 'Cancelled by patient — delivered early at 37 wks' },
+            { id: 'demo-dec26-06', date: '2026-12-13', bookingType: 'Ad Hoc', slotNumber: null, time: '16:40', patientName: 'Sharifah Nabila binti Syed Omar', mrn: 'MRN-261206', sourceOfReferral: 'WARD 7A', requestingDept: 'O&G - Obstetrics', indication: 'Peripartum Cardiomyopathy (PPCM) Assessment', orderedByPakar: 'Dr. Faridah (Pakar O&G)', bookedBy: 'SN Hidayah', bookedByRole: 'Nurse', status: 'Completed', remarks: 'Weekend ward referral for bilateral pedal oedema & orthopnoea' },
+            { id: 'demo-dec26-07', date: '2026-12-15', bookingType: 'Outpatient', slotNumber: 1, time: '14:00', patientName: 'Jesica anak Banting', mrn: 'MRN-261207', sourceOfReferral: 'CLINIC', requestingDept: 'MFM Unit', indication: 'Rheumatic Heart Disease in Pregnancy', orderedByPakar: 'Dr. Kavitha (Pakar MFM)', bookedBy: 'Dr. Amirul', bookedByRole: 'Dr', status: 'Booked', remarks: '3rd trimester valve gradient review' },
+            { id: 'demo-dec26-08', date: '2026-12-18', bookingType: 'Ad Hoc', slotNumber: null, time: '11:20', patientName: 'Nurul Syuhada binti Azman', mrn: 'MRN-261208', sourceOfReferral: 'ED', requestingDept: 'Internal Medicine', indication: 'Suspected Pulmonary Embolism / SOB', orderedByPakar: 'Dr. Norazlina (Pakar O&G)', bookedBy: 'MA Hakim', bookedByRole: 'MA', status: 'Booked', remarks: 'Postnatal day 6 presenting with pleuritic chest pain' },
+            { id: 'demo-dec26-09', date: '2026-12-22', bookingType: 'Outpatient', slotNumber: 1, time: '14:00', patientName: 'Devi a/p Rajendran', mrn: 'MRN-261209', sourceOfReferral: 'CLINIC', requestingDept: 'O&G - Obstetrics', indication: 'Chronic Hypertension in Pregnancy', orderedByPakar: 'Dr. Syafiqah (Pakar O&G)', bookedBy: 'SN Farah', bookedByRole: 'Nurse', status: 'Booked', remarks: 'Routine LVH screening at 28 wks' },
+            { id: 'demo-dec26-10', date: '2026-12-30', bookingType: 'Outpatient', slotNumber: 1, time: '14:00', patientName: 'Goh Jia Wen', mrn: 'MRN-261210', sourceOfReferral: 'WARD 7B', requestingDept: 'O&G - Gynaecology', indication: 'Pre-op Gynae Oncology Assessment', orderedByPakar: 'Dr. Lim Wei Jian (Pakar Gynae-Onco)', bookedBy: 'Dr. Nadiah', bookedByRole: 'Dr', status: 'Booked', remarks: 'Pre-anaesthetic clearance for ovarian mass' },
+
+            // ---- JANUARY 2027 (10 Records) ----
+            { id: 'demo-jan27-01', date: '2027-01-04', bookingType: 'Ad Hoc', slotNumber: null, time: '08:45', patientName: 'Zulaikha binti Kamaruddin', mrn: 'MRN-270101', sourceOfReferral: 'WARD 6A', requestingDept: 'O&G - Obstetrics', indication: 'Pre-eclampsia / Severe PIH', orderedByPakar: 'Dr. Faridah (Pakar O&G)', bookedBy: 'SN Aisyah', bookedByRole: 'Nurse', status: 'Booked', remarks: 'Morning ward round urgent ECHO request' },
+            { id: 'demo-jan27-02', date: '2027-01-05', bookingType: 'Outpatient', slotNumber: 1, time: '14:00', patientName: 'Ong Shu Ting', mrn: 'MRN-270102', sourceOfReferral: 'CLINIC', requestingDept: 'O&G - Obstetrics', indication: 'Gestational Hypertension', orderedByPakar: 'Dr. Norazlina (Pakar O&G)', bookedBy: 'Dr. Amirul', bookedByRole: 'Dr', status: 'Booked', remarks: 'G3P2 at 33 wks, newly started Nifedipine' },
+            { id: 'demo-jan27-03', date: '2027-01-06', bookingType: 'Outpatient', slotNumber: 1, time: '14:00', patientName: 'Anitha a/p Selvam', mrn: 'MRN-270103', sourceOfReferral: 'CLINIC', requestingDept: 'MFM Unit', indication: 'Congenital Heart Disease in Pregnancy', orderedByPakar: 'Dr. Kavitha (Pakar MFM)', bookedBy: 'MA Faizal', bookedByRole: 'MA', status: 'Booked', remarks: 'Known ASD closure, routine antenatal ECHO' },
+            { id: 'demo-jan27-04', date: '2027-01-09', bookingType: 'Ad Hoc', slotNumber: null, time: '23:10', patientName: 'Wan Nurul Izzati', mrn: 'MRN-270104', sourceOfReferral: 'ICU', requestingDept: 'Anaesthesiology / ICU', indication: 'Peripartum Cardiomyopathy (PPCM) Assessment', orderedByPakar: 'Dr. Ravindran (Pakar O&G)', bookedBy: 'Dr. Danial', bookedByRole: 'Dr', status: 'Booked', remarks: 'Late-night on-call EF & IVC assessment in ICU' },
+            { id: 'demo-jan27-05', date: '2027-01-12', bookingType: 'Outpatient', slotNumber: 1, time: '14:00', patientName: 'Farah Nadia binti Yusof', mrn: 'MRN-270105', sourceOfReferral: 'PAC', requestingDept: 'O&G - Obstetrics', indication: 'Maternal Murmur / Palpitations', orderedByPakar: 'Dr. Syafiqah (Pakar O&G)', bookedBy: 'SN Hidayah', bookedByRole: 'Nurse', status: 'Booked', remarks: 'Pansystolic murmur noted at booking visit' },
+            { id: 'demo-jan27-06', date: '2027-01-13', bookingType: 'Outpatient', slotNumber: 2, time: '14:20', patientName: 'Yap Xiao Wei', mrn: 'MRN-270106', sourceOfReferral: 'WARD 7B', requestingDept: 'O&G - Gynaecology', indication: 'Pre-op Gynae Oncology Assessment', orderedByPakar: 'Dr. Lim Wei Jian (Pakar Gynae-Onco)', bookedBy: 'MA Hakim', bookedByRole: 'MA', status: 'Booked', remarks: 'Pre-op evaluation for endometrial carcinoma' },
+            { id: 'demo-jan27-07', date: '2027-01-15', bookingType: 'Ad Hoc', slotNumber: null, time: '15:00', patientName: 'Rosmawati binti Daud', mrn: 'MRN-270107', sourceOfReferral: 'WARD 7A', requestingDept: 'Cardiology Co-management', indication: 'Suspected Pulmonary Embolism / SOB', orderedByPakar: 'Dr. Faridah (Pakar O&G)', bookedBy: 'Dr. Nadiah', bookedByRole: 'Dr', status: 'Booked', remarks: 'Co-managed with Cardiology, Day 3 post-LSCS' },
+            { id: 'demo-jan27-08', date: '2027-01-19', bookingType: 'Outpatient', slotNumber: 1, time: '14:00', patientName: 'Vasanthi a/p Krishnan', mrn: 'MRN-270108', sourceOfReferral: 'CLINIC', requestingDept: 'MFM Unit', indication: 'Rheumatic Heart Disease in Pregnancy', orderedByPakar: 'Dr. Kavitha (Pakar MFM)', bookedBy: 'SN Farah', bookedByRole: 'Nurse', status: 'Booked', remarks: 'Mitral regurgitation surveillance at 30 wks' },
+            { id: 'demo-jan27-09', date: '2027-01-26', bookingType: 'Outpatient', slotNumber: 1, time: '14:00', patientName: 'Hanim binti Mohd Noor', mrn: 'MRN-270109', sourceOfReferral: 'ED', requestingDept: 'O&G - Obstetrics', indication: 'Twin Pregnancy / Maternal Tachycardia', orderedByPakar: 'Dr. Norazlina (Pakar O&G)', bookedBy: 'Dr. Amirul', bookedByRole: 'Dr', status: 'Booked', remarks: 'MCDA twin pregnancy with exertional SOB' },
+            { id: 'demo-jan27-10', date: '2027-01-28', bookingType: 'Ad Hoc', slotNumber: null, time: '19:30', patientName: 'Christina anak Jabu', mrn: 'MRN-270110', sourceOfReferral: 'HDU/LR', requestingDept: 'O&G - Obstetrics', indication: 'Pre-eclampsia / Severe PIH', orderedByPakar: 'Dr. Ravindran (Pakar O&G)', bookedBy: 'SN Aisyah', bookedByRole: 'Nurse', status: 'Booked', remarks: 'Evening urgent Labour Room bedside ECHO' }
+        ];
+
+        // =========================================================================
+        // 5. FIREBASE / LOCAL PERSISTENCE ENGINE
+        // =========================================================================
+        let db = null;
+        let auth = null;
+        let appId = 'og-echo-booking';
+        let unsubscribeBookings = null;
+
+        function setSyncBadge(status, label) {
+            const dot = document.getElementById('sync-dot');
+            const txt = document.getElementById('sync-text');
+            if (!dot || !txt) return;
+            dot.classList.remove('bg-belacan-500', 'bg-clinical-600', 'bg-coral-600', 'animate-pulse');
+            if (status === 'cloud') {
+                dot.classList.add('bg-clinical-600');
+            } else if (status === 'local') {
+                dot.classList.add('bg-coral-600');
+            } else {
+                dot.classList.add('bg-belacan-500', 'animate-pulse');
+            }
+            txt.textContent = label;
+        }
+
+        function saveLocalBookings() {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state.bookings));
+            } catch (err) {
+                console.warn('LocalStorage save failed:', err);
+            }
+        }
+
+        async function initLocalMode() {
+            state.useCloud = false;
+            setSyncBadge('local', 'Local Mode');
+            let saved = [];
+            try {
+                const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+                if (raw) saved = JSON.parse(raw);
+            } catch (err) {
+                saved = [];
+            }
+
+            const existingIds = new Set(saved.map(r => r.id));
+            state.bookings = saved;
+
+            const missingAnyDemo = DEMO_30_RECORDS.some(r => !existingIds.has(r.id));
+            if (missingAnyDemo) {
+                await seedSampleData(false, existingIds);
+            } else {
+                state.bookings.sort((a, b) => (a.date + ' ' + a.time).localeCompare(b.date + ' ' + b.time));
+                document.getElementById('total-records-count').textContent = `${state.bookings.length} rec`;
+                renderAllActiveViews();
+            }
+        }
+
+        async function initFirebase() {
+            try {
+                const rawConfig = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+                if (!rawConfig) {
+                    await initLocalMode();
+                    return;
+                }
+                const firebaseConfig = typeof rawConfig === 'string' ? JSON.parse(rawConfig) : rawConfig;
+                if (!firebaseConfig || !firebaseConfig.apiKey) {
+                    await initLocalMode();
+                    return;
+                }
+
+                appId = typeof __app_id !== 'undefined' && __app_id ? __app_id : 'og-echo-booking';
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                state.useCloud = true;
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        state.user = user;
+                        setSyncBadge('cloud', 'Cloud Synced');
+                        subscribeToBookings();
+                    }
+                });
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.warn('Firebase init fallback to local mode:', err);
+                await initLocalMode();
+            }
+        }
+
+        function subscribeToBookings() {
+            if (!state.useCloud || !state.user) return;
+            if (unsubscribeBookings) unsubscribeBookings();
+
+            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'echo_bookings');
+            unsubscribeBookings = onSnapshot(
+                colRef,
+                async (snapshot) => {
+                    const list = [];
+                    const existingIds = new Set();
+                    snapshot.forEach((docSnap) => {
+                        existingIds.add(docSnap.id);
+                        list.push({ id: docSnap.id, ...docSnap.data() });
+                    });
+
+                    if (!state.seededOnce) {
+                        state.seededOnce = true;
+                        const missingAnyDemo = DEMO_30_RECORDS.some(r => !existingIds.has(r.id));
+                        if (missingAnyDemo) {
+                            await seedSampleData(false, existingIds);
+                            return;
+                        }
+                    }
+
+                    list.sort((a, b) => (a.date + ' ' + a.time).localeCompare(b.date + ' ' + b.time));
+                    state.bookings = list;
+                    document.getElementById('total-records-count').textContent = `${list.length} rec`;
+                    renderAllActiveViews();
+                },
+                (error) => {
+                    console.error('Firestore sync error:', error);
+                    showToast('Unable to sync bookings from cloud.', 'error');
+                }
+            );
+        }
+
+        // =========================================================================
+        // 6. CRUD OPERATIONS
+        // =========================================================================
+        async function createBookingRecord(payload, deterministicId = null) {
+            if (state.useCloud && state.user) {
+                if (deterministicId) {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'echo_bookings', deterministicId);
+                    await setDoc(docRef, payload, { merge: true });
+                } else {
+                    const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'echo_bookings');
+                    await addDoc(colRef, payload);
+                }
+            } else {
+                const id = deterministicId || ('loc_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7));
+                const idx = state.bookings.findIndex(b => b.id === id);
+                if (idx !== -1) {
+                    state.bookings[idx] = { id, ...payload };
+                } else {
+                    state.bookings.push({ id, ...payload });
+                }
+                state.bookings.sort((a, b) => (a.date + ' ' + a.time).localeCompare(b.date + ' ' + b.time));
+                saveLocalBookings();
+                document.getElementById('total-records-count').textContent = `${state.bookings.length} rec`;
+                renderAllActiveViews();
+            }
+        }
+
+        async function updateBookingRecord(id, payload) {
+            if (state.useCloud && state.user) {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'echo_bookings', id);
+                await updateDoc(docRef, payload);
+            } else {
+                const idx = state.bookings.findIndex(b => b.id === id);
+                if (idx !== -1) {
+                    state.bookings[idx] = { ...state.bookings[idx], ...payload };
+                    state.bookings.sort((a, b) => (a.date + ' ' + a.time).localeCompare(b.date + ' ' + b.time));
+                    saveLocalBookings();
+                    renderAllActiveViews();
+                }
+            }
+        }
+
+        async function deleteBookingRecord(id) {
+            if (state.useCloud && state.user) {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'echo_bookings', id);
+                await deleteDoc(docRef);
+            } else {
+                state.bookings = state.bookings.filter(b => b.id !== id);
+                saveLocalBookings();
+                document.getElementById('total-records-count').textContent = `${state.bookings.length} rec`;
+                renderAllActiveViews();
+            }
+        }
+
+        window.quickUpdateStatus = async function(id, newStatus) {
+            try {
+                await updateBookingRecord(id, { status: newStatus, updatedAt: new Date().toISOString() });
+                showToast(`Status updated to ${newStatus}.`, 'success');
+            } catch (err) {
+                console.error(err);
+                showToast('Failed to update status.', 'error');
+            }
+        };
+
+        async function seedSampleData(forceOverwrite = false, existingIds = new Set()) {
+            try {
+                const nowIso = new Date().toISOString();
+                for (const rec of DEMO_30_RECORDS) {
+                    if (!forceOverwrite && existingIds.has(rec.id)) continue;
+                    const { id, ...data } = rec;
+                    const payload = { ...data, createdAt: nowIso, updatedAt: nowIso };
+                    if (state.useCloud && state.user) {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'echo_bookings', id);
+                        await setDoc(docRef, payload, { merge: true });
+                    } else {
+                        const idx = state.bookings.findIndex(b => b.id === id);
+                        if (idx !== -1) {
+                            state.bookings[idx] = { id, ...payload };
+                        } else {
+                            state.bookings.push({ id, ...payload });
+                        }
+                    }
+                }
+                if (!state.useCloud) {
+                    state.bookings.sort((a, b) => (a.date + ' ' + a.time).localeCompare(b.date + ' ' + b.time));
+                    saveLocalBookings();
+                    document.getElementById('total-records-count').textContent = `${state.bookings.length} rec`;
+                    renderAllActiveViews();
+                }
+                if (forceOverwrite) {
+                    showToast('30 Nov 2026 – Jan 2027 demo records loaded successfully.', 'success');
+                }
+            } catch (err) {
+                console.error('Seed error:', err);
+                showToast('Error loading demo records.', 'error');
+            }
+        }
+
+        window.confirmLoadSampleData = function() {
+            openConfirmModal(
+                'Load / Restore 30 Demo Records?',
+                'This will restore all 30 Malaysian O&G demo records across Nov 2026, Dec 2026, and Jan 2027 (with updated PAC/ED/CLINIC/ICU/HDU-LR/Ward referral sources). Your own custom bookings will remain untouched.',
+                async () => {
+                    await seedSampleData(true);
+                }
+            );
+        };
+
+        // =========================================================================
+        // 7. SCHEDULING QUERIES
+        // =========================================================================
+        function getActiveOutpatientBookings(dateStr, excludeId = null) {
+            return state.bookings.filter(
+                b => b.date === dateStr && b.bookingType === 'Outpatient' && b.status !== 'Cancelled' && b.id !== excludeId
+            ).sort((a, b) => (a.slotNumber || 99) - (b.slotNumber || 99));
+        }
+
+        function getAdHocBookings(dateStr) {
+            return state.bookings
+                .filter(b => b.date === dateStr && b.bookingType === 'Ad Hoc')
+                .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+        }
+
+        // =========================================================================
+        // 8. NAVIGATION & VIEW ROUTING
+        // =========================================================================
+        const VIEW_META = {
+            daily: { title: 'Daily ECHO Schedule', subtitle: 'Tue/Wed 2:00 PM Outpatient (Max 6) & 24-Hour Ad Hoc Board' },
+            weekly: { title: 'Weekly ECHO Schedule', subtitle: '7-Day O&G Echocardiogram Overview' },
+            monthly: { title: 'Monthly ECHO Calendar', subtitle: 'Tap any date to inspect or book slots' },
+            yearly: { title: 'Yearly ECHO Overview', subtitle: 'Annual volume & Outpatient slot utilization' },
+            dashboard: { title: 'HOD Executive Dashboard', subtitle: 'O&G ECHO analytics, KPIs & specialist breakdown' },
+            census: { title: 'Clinical Census & PDF Reports', subtitle: 'Searchable patient log with A4 Pink Belacan PDF & Print export' }
+        };
+
+        window.switchView = function(viewName) {
+            state.currentView = viewName;
+            document.querySelectorAll('.app-view').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(`view-${viewName}`);
+            if (target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                const isActive = btn.dataset.nav === viewName;
+                if (isActive) {
+                    btn.className = 'nav-btn shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-belacan-gradient text-white shadow-rose-sm transition-all';
+                } else {
+                    btn.className = 'nav-btn shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-plum-500 hover:bg-belacan-100/70 hover:text-belacan-900 transition-all';
+                }
+            });
+
+            document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+                const isActive = btn.dataset.mobileNav === viewName;
+                if (isActive) {
+                    btn.className = 'mobile-nav-btn flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[10px] font-extrabold bg-belacan-100 text-belacan-800 transition-all';
+                } else {
+                    btn.className = 'mobile-nav-btn flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-xl text-[10px] font-bold text-plum-500 hover:text-belacan-800 transition-all';
+                }
+            });
+
+            const meta = VIEW_META[viewName] || VIEW_META.daily;
+            document.getElementById('header-view-title').textContent = meta.title;
+            document.getElementById('header-view-subtitle').textContent = meta.subtitle;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            renderAllActiveViews();
+        };
+
+        function renderAllActiveViews() {
+            if (state.currentView === 'daily') renderDailyView();
+            else if (state.currentView === 'weekly') renderWeeklyView();
+            else if (state.currentView === 'monthly') renderMonthlyView();
+            else if (state.currentView === 'yearly') renderYearlyView();
+            else if (state.currentView === 'dashboard') renderDashboardAndCensus();
+            else if (state.currentView === 'census') renderDashboardAndCensus();
+
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        // =========================================================================
+        // 9. DAILY VIEW RENDERER
+        // =========================================================================
+        window.shiftDailyDate = function(delta) {
+            const d = parseDateISO(state.selectedDate);
+            d.setDate(d.getDate() + delta);
+            state.selectedDate = formatDateISO(d);
+            state.selectedMonth = d.getMonth();
+            state.selectedYear = d.getFullYear();
+            renderDailyView();
+        };
+
+        window.setDailyDate = function(val) {
+            if (!val) return;
+            state.selectedDate = val;
+            const d = parseDateISO(val);
+            state.selectedMonth = d.getMonth();
+            state.selectedYear = d.getFullYear();
+            renderDailyView();
+        };
+
+        window.goToday = function() {
+            const now = new Date();
+            state.selectedDate = formatDateISO(now);
+            state.selectedMonth = now.getMonth();
+            state.selectedYear = now.getFullYear();
+            renderDailyView();
+        };
+
+        window.jumpToDaily = function(dateStr) {
+            state.selectedDate = dateStr;
+            const d = parseDateISO(dateStr);
+            state.selectedMonth = d.getMonth();
+            state.selectedYear = d.getFullYear();
+            window.switchView('daily');
+        };
+
+        function renderDailyView() {
+            const dStr = state.selectedDate;
+            const picker = document.getElementById('daily-date-picker');
+            if (picker) picker.value = dStr;
+
+            const isOpDay = isOutpatientDay(dStr);
+            const activeOp = getActiveOutpatientBookings(dStr);
+            const adHocList = getAdHocBookings(dStr);
+
+            const dayBadge = document.getElementById('daily-day-badge');
+            const quickOpBtn = document.getElementById('daily-quick-op-btn');
+
+            if (isOpDay) {
+                dayBadge.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-belacan-100 text-belacan-800 border border-belacan-200 text-center sm:text-left';
+                dayBadge.innerHTML = `${formatDisplayDate(dStr)} &bull; Outpatient Day (${activeOp.length}/6 slots)`;
+                quickOpBtn.classList.remove('hidden');
+            } else {
+                dayBadge.className = 'px-3 py-1.5 rounded-xl text-xs font-bold bg-coral-50 text-coral-700 border border-coral-200 text-center sm:text-left';
+                dayBadge.innerHTML = `${formatDisplayDate(dStr)} &bull; Ad Hoc Day (Anytime 24h)`;
+                quickOpBtn.classList.add('hidden');
+            }
+
+            let html = '';
+
+            // SECTION A: OUTPATIENT 6-SLOT BOARD (Tue / Wed)
+            if (isOpDay) {
+                const slotMap = {};
+                activeOp.forEach(b => { if (b.slotNumber) slotMap[b.slotNumber] = b; });
+
+                html += `
+                <div class="bg-white/95 rounded-2xl border border-belacan-200 p-4 sm:p-5 shadow-rose-sm space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-belacan-600"></span>
+                                <h3 class="font-display text-sm sm:text-base font-extrabold text-plum-900">Outpatient ECHO Session (2:00 PM – 3:40 PM)</h3>
+                            </div>
+                            <p class="text-xs text-plum-500 mt-0.5">Tuesday &amp; Wednesday outpatient list — strictly capped at 6 patients/day</p>
+                        </div>
+                        <span class="self-start sm:self-auto px-3 py-1 rounded-full text-xs font-extrabold ${activeOp.length >= 6 ? 'bg-belacan-900 text-white' : 'bg-belacan-100 text-belacan-800'}">
+                            ${activeOp.length} / ${MAX_OUTPATIENT_PER_DAY} Booked
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">`;
+
+                OUTPATIENT_SLOTS.forEach(s => {
+                    const b = slotMap[s.slot];
+                    if (b) {
+                        html += `
+                        <div onclick="openDetailModal('${b.id}')" class="cursor-pointer rounded-2xl border border-belacan-200 bg-belacan-50/50 hover:bg-belacan-50 hover:border-belacan-400 p-3.5 transition-all flex flex-col justify-between gap-2.5">
+                            <div class="flex items-start justify-between gap-2">
+                                <div>
+                                    <span class="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider text-belacan-700 bg-belacan-100 px-2 py-0.5 rounded-md">Slot ${s.slot} &bull; ${s.short}</span>
+                                    <h4 class="font-display text-sm font-extrabold text-plum-900 mt-1.5 leading-snug">${escapeHtml(b.patientName)}</h4>
+                                    <p class="text-[11px] font-mono text-plum-500">${escapeHtml(b.mrn)}</p>
+                                </div>
+                                <span class="shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold ${getStatusBadgeClasses(b.status)}">${escapeHtml(b.status)}</span>
+                            </div>
+                            <div class="text-xs text-plum-700 font-medium line-clamp-1">${escapeHtml(b.indication)}</div>
+                            <div class="flex flex-wrap items-center justify-between gap-1 pt-2 border-t border-belacan-200/70 text-[11px] text-plum-500">
+                                <span class="font-bold text-belacan-800">${escapeHtml(b.sourceOfReferral)}</span>
+                                <span class="truncate max-w-[160px]">${escapeHtml(b.orderedByPakar)}</span>
+                            </div>
+                        </div>`;
+                    } else {
+                        html += `
+                        <button onclick="openBookingModal({ date: '${dStr}', type: 'Outpatient', slot: ${s.slot} })" class="rounded-2xl border-2 border-dashed border-belacan-200 hover:border-belacan-500 hover:bg-belacan-50/70 p-4 transition-all text-left flex items-center justify-between group">
+                            <div>
+                                <div class="text-xs font-extrabold text-belacan-700">Slot ${s.slot} &bull; ${s.short}</div>
+                                <div class="text-xs text-plum-400 mt-0.5 group-hover:text-belacan-700">Available — Tap to book</div>
+                            </div>
+                            <div class="w-8 h-8 rounded-xl bg-belacan-100 text-belacan-700 group-hover:bg-belacan-600 group-hover:text-white flex items-center justify-center transition-colors">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </div>
+                        </button>`;
+                    }
+                });
+
+                html += `</div></div>`;
+            } else {
+                const nextOp = getNextOutpatientDate(dStr);
+                html += `
+                <div class="bg-white/95 rounded-2xl border border-belacan-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-rose-sm">
+                    <div class="flex items-start gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-belacan-100 text-belacan-700 flex items-center justify-center shrink-0">
+                            <i data-lucide="info" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-display text-sm font-extrabold text-plum-900">No Routine Outpatient Session Today</h4>
+                            <p class="text-xs text-plum-500 mt-0.5">Outpatient ECHO runs only on <strong>Tuesday &amp; Wednesday at 2:00 PM</strong>. Ad Hoc clinic/ward bookings are open 24 hours below.</p>
+                        </div>
+                    </div>
+                    <button onclick="jumpToDaily('${nextOp}')" class="shrink-0 px-3.5 py-2 rounded-xl border border-belacan-200 bg-belacan-50 hover:bg-belacan-100 text-belacan-800 text-xs font-bold transition-colors">
+                        Jump to Next OP (${nextOp})
+                    </button>
+                </div>`;
+            }
+
+            // SECTION B: 24-HOUR AD HOC LIST (EVERY DAY)
+            html += `
+            <div class="bg-white/95 rounded-2xl border border-coral-200 p-4 sm:p-5 shadow-rose-sm space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-coral-600"></span>
+                            <h3 class="font-display text-sm sm:text-base font-extrabold text-plum-900">Ad Hoc ECHO Bookings (24-Hour Clinic / Ward / Urgent)</h3>
+                        </div>
+                        <p class="text-xs text-plum-500 mt-0.5">Unrestricted — bookable any day, any time (00:00–23:59), separate from Outpatient quota</p>
+                    </div>
+                    <span class="self-start sm:self-auto px-3 py-1 rounded-full text-xs font-extrabold bg-coral-50 text-coral-700 border border-coral-200">
+                        ${adHocList.length} Ad Hoc Case${adHocList.length === 1 ? '' : 's'}
+                    </span>
+                </div>`;
+
+            if (adHocList.length === 0) {
+                html += `
+                <div class="rounded-2xl border-2 border-dashed border-coral-200/80 bg-coral-50/30 p-6 text-center space-y-2">
+                    <p class="text-xs font-semibold text-plum-500">No Ad Hoc ECHO bookings scheduled for ${formatDisplayDate(dStr)}.</p>
+                    <button onclick="openBookingModal({ date: '${dStr}', type: 'Ad Hoc' })" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-coral-600 hover:bg-coral-700 text-white text-xs font-bold shadow-xs">
+                        <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                        <span>Add Ad Hoc Booking</span>
+                    </button>
+                </div>`;
+            } else {
+                html += `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">`;
+                adHocList.forEach(b => {
+                    html += `
+                    <div onclick="openDetailModal('${b.id}')" class="cursor-pointer rounded-2xl border border-coral-200 bg-coral-50/40 hover:bg-coral-50/80 p-3.5 transition-all flex flex-col justify-between gap-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <span class="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider text-coral-700 bg-coral-50 border border-coral-200 px-2 py-0.5 rounded-md">Ad Hoc &bull; ${formatTime12h(b.time)}</span>
+                                <h4 class="font-display text-sm font-extrabold text-plum-900 mt-1.5 leading-snug">${escapeHtml(b.patientName)}</h4>
+                                <p class="text-[11px] font-mono text-plum-500">${escapeHtml(b.mrn)} &bull; ${escapeHtml(b.sourceOfReferral)}</p>
+                            </div>
+                            <span class="shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold ${getStatusBadgeClasses(b.status)}">${escapeHtml(b.status)}</span>
+                        </div>
+                        <div class="text-xs text-plum-700 font-medium">${escapeHtml(b.indication)}</div>
+                        <div class="flex flex-wrap items-center justify-between gap-1 pt-2 border-t border-coral-200/60 text-[11px] text-plum-500">
+                            <span>${escapeHtml(b.orderedByPakar)}</span>
+                            <span>By: ${escapeHtml(b.bookedBy)} (${escapeHtml(b.bookedByRole)})</span>
+                        </div>
+                    </div>`;
+                });
+                html += `</div>`;
+            }
+
+            html += `</div>`;
+
+            document.getElementById('daily-content-area').innerHTML = html;
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        // =========================================================================
+        // 10. WEEKLY VIEW RENDERER
+        // =========================================================================
+        window.shiftWeek = function(delta) {
+            const d = parseDateISO(state.selectedDate);
+            d.setDate(d.getDate() + delta * 7);
+            state.selectedDate = formatDateISO(d);
+            renderWeeklyView();
+        };
+
+        window.goThisWeek = function() {
+            state.selectedDate = formatDateISO(new Date());
+            renderWeeklyView();
+        };
+
+        function renderWeeklyView() {
+            const monday = getMondayOfWeek(state.selectedDate);
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+
+            document.getElementById('weekly-range-label').textContent =
+                `${monday.getDate()} ${SHORT_MONTHS[monday.getMonth()]} – ${sunday.getDate()} ${SHORT_MONTHS[sunday.getMonth()]} ${sunday.getFullYear()}`;
+
+            const todayISO = formatDateISO(new Date());
+            let html = '';
+
+            for (let i = 0; i < 7; i++) {
+                const cur = new Date(monday);
+                cur.setDate(monday.getDate() + i);
+                const dStr = formatDateISO(cur);
+                const isOp = isOutpatientDay(dStr);
+                const isToday = dStr === todayISO;
+                const opList = getActiveOutpatientBookings(dStr);
+                const ahList = getAdHocBookings(dStr).filter(b => b.status !== 'Cancelled');
+
+                html += `
+                <div class="bg-white/95 rounded-2xl border ${isToday ? 'border-belacan-600 ring-2 ring-belacan-500/20' : 'border-belacan-200'} p-3.5 shadow-rose-sm flex flex-col justify-between gap-3">
+                    <div>
+                        <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-belacan-100">
+                            <div onclick="jumpToDaily('${dStr}')" class="cursor-pointer">
+                                <div class="text-[11px] font-bold uppercase tracking-wider ${isOp ? 'text-belacan-700' : 'text-plum-400'}">${SHORT_DAYS[cur.getDay()]}</div>
+                                <div class="font-display text-base font-extrabold text-plum-900">${cur.getDate()} ${SHORT_MONTHS[cur.getMonth()]}</div>
+                            </div>
+                            ${isOp
+                                ? `<span class="px-2 py-0.5 rounded-lg text-[10px] font-extrabold ${opList.length >= 6 ? 'bg-belacan-900 text-white' : 'bg-belacan-100 text-belacan-800'}">OP ${opList.length}/6</span>`
+                                : `<span class="px-2 py-0.5 rounded-lg text-[10px] font-bold bg-coral-50 text-coral-700">Ad Hoc</span>`
+                            }
+                        </div>
+
+                        <div class="space-y-1.5">
+                            ${opList.map(b => `
+                                <div onclick="openDetailModal('${b.id}')" class="cursor-pointer p-2 rounded-xl bg-belacan-50 hover:bg-belacan-100/80 border border-belacan-200/70 transition-colors">
+                                    <div class="flex items-center justify-between text-[10px] font-bold text-belacan-700">
+                                        <span>S${b.slotNumber} &bull; ${formatTime12h(b.time)}</span>
+                                        <span>${escapeHtml(b.sourceOfReferral)}</span>
+                                    </div>
+                                    <div class="text-xs font-bold text-plum-900 truncate mt-0.5">${escapeHtml(b.patientName)}</div>
+                                </div>
+                            `).join('')}
+
+                            ${ahList.map(b => `
+                                <div onclick="openDetailModal('${b.id}')" class="cursor-pointer p-2 rounded-xl bg-coral-50/70 hover:bg-coral-50 border border-coral-200/70 transition-colors">
+                                    <div class="flex items-center justify-between text-[10px] font-bold text-coral-700">
+                                        <span>AH &bull; ${formatTime12h(b.time)}</span>
+                                        <span>${escapeHtml(b.sourceOfReferral)}</span>
+                                    </div>
+                                    <div class="text-xs font-bold text-plum-900 truncate mt-0.5">${escapeHtml(b.patientName)}</div>
+                                </div>
+                            `).join('')}
+
+                            ${(opList.length === 0 && ahList.length === 0) ? `
+                                <div class="py-5 text-center text-[11px] text-plum-400">No bookings</div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <button onclick="openBookingModal({ date: '${dStr}', type: '${isOp ? 'Outpatient' : 'Ad Hoc'}' })" class="w-full py-2 rounded-xl border border-belacan-200 hover:bg-belacan-50 text-[11px] font-bold text-belacan-800 transition-colors">
+                        + Book Day
+                    </button>
+                </div>`;
+            }
+
+            document.getElementById('weekly-grid').innerHTML = html;
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        // =========================================================================
+        // 11. MONTHLY VIEW RENDERER
+        // =========================================================================
+        window.shiftMonth = function(delta) {
+            state.selectedMonth += delta;
+            if (state.selectedMonth < 0) {
+                state.selectedMonth = 11;
+                state.selectedYear -= 1;
+            } else if (state.selectedMonth > 11) {
+                state.selectedMonth = 0;
+                state.selectedYear += 1;
+            }
+            renderMonthlyView();
+        };
+
+        window.goThisMonth = function() {
+            const now = new Date();
+            state.selectedMonth = now.getMonth();
+            state.selectedYear = now.getFullYear();
+            renderMonthlyView();
+        };
+
+        function renderMonthlyView() {
+            const y = state.selectedYear;
+            const m = state.selectedMonth;
+            document.getElementById('monthly-label').textContent = `${MONTH_NAMES[m]} ${y}`;
+
+            const monthPrefix = `${y}-${String(m + 1).padStart(2, '0')}`;
+            const monthRecords = state.bookings.filter(b => b.date.startsWith(monthPrefix) && b.status !== 'Cancelled');
+            const opTotal = monthRecords.filter(b => b.bookingType === 'Outpatient').length;
+            const ahTotal = monthRecords.filter(b => b.bookingType === 'Ad Hoc').length;
+
+            document.getElementById('monthly-summary-pills').innerHTML = `
+                <span class="px-3 py-1 rounded-full bg-belacan-100 text-belacan-800 font-bold">Outpatient: ${opTotal}</span>
+                <span class="px-3 py-1 rounded-full bg-coral-50 text-coral-700 border border-coral-200 font-bold">Ad Hoc: ${ahTotal}</span>
+                <span class="px-3 py-1 rounded-full bg-plum-900 text-white font-bold">Total: ${monthRecords.length}</span>
+            `;
+
+            const firstDay = new Date(y, m, 1);
+            const totalDays = new Date(y, m + 1, 0).getDate();
+            const startOffset = (firstDay.getDay() + 6) % 7; // Mon = 0 .. Sun = 6
+
+            let html = '';
+            for (let i = 0; i < startOffset; i++) {
+                html += `<div class="min-h-[74px] sm:min-h-[114px] bg-belacan-50/50 p-1 sm:p-2"></div>`;
+            }
+
+            const todayISO = formatDateISO(new Date());
+            for (let day = 1; day <= totalDays; day++) {
+                const dStr = `${monthPrefix}-${String(day).padStart(2, '0')}`;
+                const isToday = dStr === todayISO;
+                const isOp = isOutpatientDay(dStr);
+                const opCount = getActiveOutpatientBookings(dStr).length;
+                const ahCount = getAdHocBookings(dStr).filter(b => b.status !== 'Cancelled').length;
+
+                html += `
+                <div onclick="jumpToDaily('${dStr}')" class="min-h-[74px] sm:min-h-[114px] p-1 sm:p-2 cursor-pointer hover:bg-belacan-100/40 active:bg-belacan-100 transition-colors flex flex-col justify-between ${isOp ? 'bg-belacan-50/45' : 'bg-white'}">
+                    <div class="flex items-center justify-between">
+                        <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full text-[11px] sm:text-xs font-extrabold flex items-center justify-center ${isToday ? 'bg-belacan-gradient text-white' : 'text-plum-900'}">${day}</span>
+                        ${isOp ? `<span class="text-[9px] font-extrabold uppercase tracking-wider text-belacan-600 hidden sm:inline">OP 2PM</span>` : ''}
+                    </div>
+                    <div class="space-y-0.5 sm:space-y-1 mt-1">
+                        ${isOp ? `
+                            <div class="px-1 sm:px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-bold flex items-center justify-between ${opCount >= 6 ? 'bg-belacan-900 text-white' : opCount > 0 ? 'bg-belacan-100 text-belacan-700' : 'bg-belacan-50 text-plum-400'}">
+                                <span>OP</span>
+                                <span>${opCount}/6</span>
+                            </div>
+                        ` : ''}
+                        ${ahCount > 0 ? `
+                            <div class="px-1 sm:px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-bold bg-coral-50 text-coral-600 border border-coral-200/80 flex items-center justify-between">
+                                <span>AH</span>
+                                <span>${ahCount}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>`;
+            }
+
+            document.getElementById('monthly-grid').innerHTML = html;
+        }
+
+        // =========================================================================
+        // 12. YEARLY VIEW RENDERER
+        // =========================================================================
+        window.shiftYear = function(delta) {
+            state.selectedYear += delta;
+            renderYearlyView();
+        };
+
+        window.jumpToMonth = function(monthIdx) {
+            state.selectedMonth = monthIdx;
+            window.switchView('monthly');
+        };
+
+        function renderYearlyView() {
+            const y = state.selectedYear;
+            document.getElementById('yearly-label').textContent = y;
+
+            const yearRecords = state.bookings.filter(b => b.date.startsWith(`${y}-`) && b.status !== 'Cancelled');
+            const yearOp = yearRecords.filter(b => b.bookingType === 'Outpatient').length;
+            const yearAh = yearRecords.filter(b => b.bookingType === 'Ad Hoc').length;
+
+            document.getElementById('yearly-kpi-strip').innerHTML = `
+                <span class="px-3 py-1 rounded-full bg-belacan-100 text-belacan-800 font-bold">OP: ${yearOp}</span>
+                <span class="px-3 py-1 rounded-full bg-coral-50 text-coral-700 border border-coral-200 font-bold">Ad Hoc: ${yearAh}</span>
+                <span class="px-3 py-1 rounded-full bg-plum-900 text-white font-bold">Annual Total: ${yearRecords.length}</span>
+            `;
+
+            let html = '';
+            for (let m = 0; m < 12; m++) {
+                const prefix = `${y}-${String(m + 1).padStart(2, '0')}`;
+                const mRecs = yearRecords.filter(b => b.date.startsWith(prefix));
+                const mOp = mRecs.filter(b => b.bookingType === 'Outpatient').length;
+                const mAh = mRecs.filter(b => b.bookingType === 'Ad Hoc').length;
+
+                const lastDay = new Date(y, m + 1, 0).getDate();
+                const opDays = countTueWedInRange(`${prefix}-01`, `${prefix}-${String(lastDay).padStart(2, '0')}`);
+                const capacity = opDays * MAX_OUTPATIENT_PER_DAY;
+                const utilPct = capacity > 0 ? Math.min(100, Math.round((mOp / capacity) * 100)) : 0;
+
+                html += `
+                <div onclick="jumpToMonth(${m})" class="cursor-pointer bg-white/95 rounded-2xl border border-belacan-200 hover:border-belacan-500 p-4 shadow-rose-sm hover:shadow-rose-md transition-all space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-display text-sm font-extrabold text-plum-900">${MONTH_NAMES[m]}</h4>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${mRecs.length > 0 ? 'bg-belacan-100 text-belacan-800' : 'bg-belacan-50 text-plum-400'}">${mRecs.length}</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="p-2 rounded-xl bg-belacan-50 border border-belacan-100">
+                            <div class="text-[10px] text-plum-500 font-semibold">Outpatient</div>
+                            <div class="font-display text-sm font-extrabold text-belacan-800">${mOp}</div>
+                        </div>
+                        <div class="p-2 rounded-xl bg-coral-50/70 border border-coral-200/50">
+                            <div class="text-[10px] text-plum-500 font-semibold">Ad Hoc</div>
+                            <div class="font-display text-sm font-extrabold text-coral-700">${mAh}</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-[10px] font-bold text-plum-500 mb-1">
+                            <span>OP Slot Utilization</span>
+                            <span class="text-belacan-700">${utilPct}% (${mOp}/${capacity})</span>
+                        </div>
+                        <div class="w-full h-2 rounded-full bg-belacan-100 overflow-hidden">
+                            <div class="h-full bg-belacan-gradient rounded-full transition-all" style="width: ${utilPct}%"></div>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            document.getElementById('yearly-grid').innerHTML = html;
+        }
+
+        // =========================================================================
+        // 13. ANALYTICS RANGE & HOD DASHBOARD + CENSUS
+        // =========================================================================
+        window.setAnalyticsPeriod = function(period) {
+            state.analyticsPeriod = period;
+
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                if (btn.dataset.period === period) {
+                    btn.className = 'period-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-belacan-gradient text-white shadow-2xs transition-all';
+                } else {
+                    btn.className = 'period-btn px-3 py-1.5 rounded-lg text-xs font-bold text-plum-500 hover:text-belacan-900 transition-all';
+                }
+            });
+
+            const dashCustom = document.getElementById('dashboard-custom-range');
+            const censCustom = document.getElementById('census-custom-range');
+            if (period === 'custom') {
+                dashCustom.classList.remove('hidden');
+                dashCustom.classList.add('flex');
+                censCustom.classList.remove('hidden');
+                censCustom.classList.add('flex');
+                document.getElementById('analytics-start-date').value = state.customStartDate;
+                document.getElementById('analytics-end-date').value = state.customEndDate;
+                document.getElementById('census-start-date').value = state.customStartDate;
+                document.getElementById('census-end-date').value = state.customEndDate;
+            } else {
+                dashCustom.classList.add('hidden');
+                dashCustom.classList.remove('flex');
+                censCustom.classList.add('hidden');
+                censCustom.classList.remove('flex');
+            }
+
+            renderDashboardAndCensus();
+        };
+
+        window.syncCustomDatesFromCensus = function() {
+            state.customStartDate = document.getElementById('census-start-date').value || state.customStartDate;
+            state.customEndDate = document.getElementById('census-end-date').value || state.customEndDate;
+            document.getElementById('analytics-start-date').value = state.customStartDate;
+            document.getElementById('analytics-end-date').value = state.customEndDate;
+            renderDashboardAndCensus();
+        };
+
+        function getAnalyticsDateRange() {
+            const p = state.analyticsPeriod;
+            if (p === 'daily') {
+                return { start: state.selectedDate, end: state.selectedDate, label: `Daily: ${formatDisplayDate(state.selectedDate)}` };
+            }
+            if (p === 'weekly') {
+                const mon = getMondayOfWeek(state.selectedDate);
+                const sun = new Date(mon);
+                sun.setDate(mon.getDate() + 6);
+                const s = formatDateISO(mon);
+                const e = formatDateISO(sun);
+                return { start: s, end: e, label: `Weekly: ${s} to ${e}` };
+            }
+            if (p === 'monthly') {
+                const y = state.selectedYear;
+                const m = state.selectedMonth;
+                const last = new Date(y, m + 1, 0).getDate();
+                const s = `${y}-${String(m + 1).padStart(2, '0')}-01`;
+                const e = `${y}-${String(m + 1).padStart(2, '0')}-${String(last).padStart(2, '0')}`;
+                return { start: s, end: e, label: `Monthly: ${MONTH_NAMES[m]} ${y}` };
+            }
+            if (p === 'yearly') {
+                const y = state.selectedYear;
+                return { start: `${y}-01-01`, end: `${y}-12-31`, label: `Yearly: ${y}` };
+            }
+            if (p === 'demo30') {
+                return { start: '2026-11-01', end: '2027-01-31', label: 'Nov 2026 – Jan 2027 (All 30 Demo Records)' };
+            }
+            const s = document.getElementById('analytics-start-date')?.value || state.customStartDate;
+            const e = document.getElementById('analytics-end-date')?.value || state.customEndDate;
+            state.customStartDate = s;
+            state.customEndDate = e;
+            return { start: s, end: e, label: `Custom: ${s} to ${e}` };
+        }
+
+        function getPeriodBookings() {
+            const range = getAnalyticsDateRange();
+            const list = state.bookings.filter(b => b.date >= range.start && b.date <= range.end);
+            return { range, list };
+        }
+
+        function countBy(list, key) {
+            const map = {};
+            list.forEach(item => {
+                const val = item[key] || 'Unspecified';
+                map[val] = (map[val] || 0) + 1;
+            });
+            return Object.entries(map).sort((a, b) => b[1] - a[1]);
+        }
+
+        function destroyChart(key) {
+            if (state.charts[key]) {
+                state.charts[key].destroy();
+                delete state.charts[key];
+            }
+        }
+
+        window.renderDashboardAndCensus = function() {
+            const { range, list } = getPeriodBookings();
+
+            const periodBadge = document.getElementById('dashboard-period-badge');
+            if (periodBadge) periodBadge.textContent = `${range.label} • ${list.length} Total Bookings`;
+            const printPeriod = document.getElementById('print-period-label');
+            if (printPeriod) printPeriod.textContent = `Report Period: ${range.label}`;
+
+            // Render HOD Dashboard if visible
+            if (state.currentView === 'dashboard') {
+                renderHODDashboard(range, list);
+            }
+            // Always update Census Table
+            renderCensusTable();
+        };
+
+        function renderHODDashboard(range, list) {
+            const active = list.filter(b => b.status !== 'Cancelled');
+            const opCount = active.filter(b => b.bookingType === 'Outpatient').length;
+            const ahCount = active.filter(b => b.bookingType === 'Ad Hoc').length;
+            const completed = list.filter(b => b.status === 'Completed').length;
+            const dna = list.filter(b => b.status === 'DNA').length;
+            const opDays = countTueWedInRange(range.start, range.end);
+            const opCap = opDays * MAX_OUTPATIENT_PER_DAY;
+            const utilPct = opCap > 0 ? Math.round((opCount / opCap) * 100) : 0;
+
+            document.getElementById('hod-kpi-grid').innerHTML = `
+                <div class="bg-white/95 rounded-2xl border border-belacan-200 p-4 shadow-rose-sm">
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-plum-500">Total Active ECHO</div>
+                    <div class="font-display text-2xl font-extrabold text-plum-900 mt-1">${active.length}</div>
+                    <div class="text-xs text-belacan-700 font-semibold mt-1">${completed} Completed &bull; ${dna} DNA</div>
+                </div>
+                <div class="bg-white/95 rounded-2xl border border-belacan-200 p-4 shadow-rose-sm">
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-plum-500">Outpatient (Tue/Wed 2PM)</div>
+                    <div class="font-display text-2xl font-extrabold text-belacan-700 mt-1">${opCount}</div>
+                    <div class="text-xs text-plum-500 font-medium mt-1">Utilization: <strong class="text-belacan-800">${utilPct}%</strong> (${opCount}/${opCap} slots)</div>
+                </div>
+                <div class="bg-white/95 rounded-2xl border border-coral-200 p-4 shadow-rose-sm">
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-plum-500">Ad Hoc (Clinic / Ward 24h)</div>
+                    <div class="font-display text-2xl font-extrabold text-coral-600 mt-1">${ahCount}</div>
+                    <div class="text-xs text-plum-500 font-medium mt-1">${active.length ? Math.round((ahCount / active.length) * 100) : 0}% of total workload</div>
+                </div>
+                <div class="bg-white/95 rounded-2xl border border-clinical-200 p-4 shadow-rose-sm">
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-plum-500">Completion Rate</div>
+                    <div class="font-display text-2xl font-extrabold text-clinical-600 mt-1">${active.length ? Math.round((completed / active.length) * 100) : 0}%</div>
+                    <div class="text-xs text-plum-500 font-medium mt-1">${list.filter(b => b.status === 'Booked').length} Upcoming / Pending</div>
+                </div>
+            `;
+
+            const BELACAN_PALETTE = ['#D9486E', '#881B3E', '#D96B27', '#E4587B', '#1F8A70', '#A1264B', '#EC7E9B', '#B85518'];
+
+            // 1. Volume Trend (grouped by Month YYYY-MM)
+            const monthMap = {};
+            active.forEach(b => {
+                const key = b.date.slice(0, 7);
+                if (!monthMap[key]) monthMap[key] = { op: 0, ah: 0 };
+                if (b.bookingType === 'Outpatient') monthMap[key].op++;
+                else monthMap[key].ah++;
+            });
+            const mKeys = Object.keys(monthMap).sort();
+            destroyChart('trend');
+            state.charts.trend = new Chart(document.getElementById('chart-volume-trend'), {
+                type: 'bar',
+                data: {
+                    labels: mKeys.map(k => {
+                        const [yr, mo] = k.split('-');
+                        return `${SHORT_MONTHS[parseInt(mo, 10) - 1]} ${yr}`;
+                    }),
+                    datasets: [
+                        { label: 'Outpatient (Tue/Wed)', data: mKeys.map(k => monthMap[k].op), backgroundColor: '#D9486E', borderRadius: 6 },
+                        { label: 'Ad Hoc (24h)', data: mKeys.map(k => monthMap[k].ah), backgroundColor: '#D96B27', borderRadius: 6 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'top', labels: { font: { size: 11, weight: 'bold' } } } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+            });
+
+            // 2. Source of Referral
+            const refEntries = countBy(active, 'sourceOfReferral');
+            destroyChart('referral');
+            state.charts.referral = new Chart(document.getElementById('chart-referral'), {
+                type: 'doughnut',
+                data: {
+                    labels: refEntries.map(e => e[0]),
+                    datasets: [{ data: refEntries.map(e => e[1]), backgroundColor: BELACAN_PALETTE, borderWidth: 2, borderColor: '#FFFFFF' }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '58%',
+                    plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 11 } } } }
+                }
+            });
+
+            // 3. Top Clinical Indications
+            const indEntries = countBy(active, 'indication').slice(0, 8);
+            destroyChart('indication');
+            state.charts.indication = new Chart(document.getElementById('chart-indication'), {
+                type: 'bar',
+                data: {
+                    labels: indEntries.map(e => e[0].length > 34 ? e[0].slice(0, 34) + '…' : e[0]),
+                    datasets: [{ label: 'Cases', data: indEntries.map(e => e[1]), backgroundColor: '#C43A62', borderRadius: 6 }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+            });
+
+            // 4. Requesting Department
+            const deptEntries = countBy(active, 'requestingDept');
+            destroyChart('dept');
+            state.charts.dept = new Chart(document.getElementById('chart-department'), {
+                type: 'bar',
+                data: {
+                    labels: deptEntries.map(e => e[0]),
+                    datasets: [{ label: 'Cases', data: deptEntries.map(e => e[1]), backgroundColor: '#881B3E', borderRadius: 6 }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+            });
+
+            // 5. Ordered By Pakar
+            const pakarEntries = countBy(active, 'orderedByPakar');
+            destroyChart('pakar');
+            state.charts.pakar = new Chart(document.getElementById('chart-pakar'), {
+                type: 'bar',
+                data: {
+                    labels: pakarEntries.map(e => e[0].replace(/\s*\(.*?\)/g, '')),
+                    datasets: [{ label: 'Orders', data: pakarEntries.map(e => e[1]), backgroundColor: '#E4587B', borderRadius: 6 }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+            });
+
+            // 6. Booked By Staff Role
+            const roleCounts = { Dr: 0, Nurse: 0, MA: 0 };
+            active.forEach(b => {
+                if (roleCounts[b.bookedByRole] !== undefined) roleCounts[b.bookedByRole]++;
+            });
+            destroyChart('role');
+            state.charts.role = new Chart(document.getElementById('chart-role'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Doctor (Dr)', 'Staff Nurse', 'MA (PPP)'],
+                    datasets: [{ data: [roleCounts.Dr, roleCounts.Nurse, roleCounts.MA], backgroundColor: ['#881B3E', '#D9486E', '#D96B27'], borderWidth: 2, borderColor: '#FFFFFF' }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '62%',
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            document.getElementById('role-breakdown-summary').innerHTML = `
+                <div class="p-2 rounded-xl bg-belacan-50">
+                    <div class="text-[10px] font-bold text-plum-500">Doctor</div>
+                    <div class="font-display text-sm font-extrabold text-belacan-900">${roleCounts.Dr}</div>
+                </div>
+                <div class="p-2 rounded-xl bg-belacan-50">
+                    <div class="text-[10px] font-bold text-plum-500">Nurse</div>
+                    <div class="font-display text-sm font-extrabold text-belacan-600">${roleCounts.Nurse}</div>
+                </div>
+                <div class="p-2 rounded-xl bg-coral-50">
+                    <div class="text-[10px] font-bold text-plum-500">MA</div>
+                    <div class="font-display text-sm font-extrabold text-coral-600">${roleCounts.MA}</div>
+                </div>
+            `;
+        }
+
+        function getFilteredCensusRecords() {
+            const { list } = getPeriodBookings();
+            const q = (document.getElementById('census-search')?.value || '').trim().toLowerCase();
+            const typeF = document.getElementById('census-filter-type')?.value || '';
+            const statusF = document.getElementById('census-filter-status')?.value || '';
+            const deptF = document.getElementById('census-filter-dept')?.value || '';
+
+            return list.filter(b => {
+                if (typeF && b.bookingType !== typeF) return false;
+                if (statusF && b.status !== statusF) return false;
+                if (deptF && b.requestingDept !== deptF) return false;
+                if (q) {
+                    const hay = `${b.patientName} ${b.mrn} ${b.sourceOfReferral} ${b.indication} ${b.orderedByPakar} ${b.bookedBy} ${b.requestingDept}`.toLowerCase();
+                    if (!hay.includes(q)) return false;
+                }
+                return true;
+            });
+        }
+
+        window.renderCensusTable = function() {
+            const list = getFilteredCensusRecords();
+            const opCount = list.filter(b => b.bookingType === 'Outpatient').length;
+            const ahCount = list.filter(b => b.bookingType === 'Ad Hoc').length;
+            const compCount = list.filter(b => b.status === 'Completed').length;
+            const dnaCount = list.filter(b => b.status === 'DNA').length;
+
+            document.getElementById('census-summary-strip').innerHTML = `
+                <div class="bg-white/95 rounded-xl border border-belacan-200 p-3 shadow-2xs">
+                    <div class="text-[10px] font-bold uppercase text-plum-500">Records</div>
+                    <div class="font-display text-lg font-extrabold text-plum-900">${list.length}</div>
+                </div>
+                <div class="bg-white/95 rounded-xl border border-belacan-200 p-3 shadow-2xs">
+                    <div class="text-[10px] font-bold uppercase text-plum-500">Outpatient</div>
+                    <div class="font-display text-lg font-extrabold text-belacan-700">${opCount}</div>
+                </div>
+                <div class="bg-white/95 rounded-xl border border-coral-200 p-3 shadow-2xs">
+                    <div class="text-[10px] font-bold uppercase text-plum-500">Ad Hoc</div>
+                    <div class="font-display text-lg font-extrabold text-coral-600">${ahCount}</div>
+                </div>
+                <div class="bg-white/95 rounded-xl border border-clinical-200 p-3 shadow-2xs">
+                    <div class="text-[10px] font-bold uppercase text-plum-500">Completed</div>
+                    <div class="font-display text-lg font-extrabold text-clinical-600">${compCount}</div>
+                </div>
+                <div class="bg-white/95 rounded-xl border border-amber-200 p-3 shadow-2xs col-span-2 sm:col-span-1">
+                    <div class="text-[10px] font-bold uppercase text-plum-500">DNA</div>
+                    <div class="font-display text-lg font-extrabold text-amber-700">${dnaCount}</div>
+                </div>
+            `;
+
+            const tbody = document.getElementById('census-table-body');
+            const mobileCards = document.getElementById('census-mobile-cards');
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" class="py-12 text-center text-plum-400 font-medium">No ECHO bookings match the selected period and filters.</td></tr>`;
+                if (mobileCards) {
+                    mobileCards.innerHTML = `<div class="bg-white/95 rounded-2xl border border-belacan-200 p-8 text-center text-xs text-plum-500 font-medium shadow-rose-sm">No ECHO bookings match the selected period and filters.</div>`;
+                }
+                return;
+            }
+
+            if (mobileCards) {
+                mobileCards.innerHTML = list.map(b => {
+                    const isOp = b.bookingType === 'Outpatient';
+                    return `
+                    <div class="bg-white/95 rounded-2xl border ${isOp ? 'border-belacan-200' : 'border-coral-200'} p-4 shadow-rose-sm space-y-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="min-w-0 cursor-pointer" onclick="openDetailModal('${b.id}')">
+                                <div class="font-display text-sm font-extrabold text-plum-900 leading-snug">${escapeHtml(b.patientName)}</div>
+                                <div class="text-[11px] font-mono text-plum-500">${escapeHtml(b.mrn)} &bull; ${escapeHtml(b.date)} ${formatTime12h(b.time)}</div>
+                            </div>
+                            <span class="shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold ${getStatusBadgeClasses(b.status)}">${escapeHtml(b.status)}</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-1.5 text-[10px] font-bold">
+                            <span class="px-2 py-0.5 rounded-md ${isOp ? 'bg-belacan-100 text-belacan-800' : 'bg-coral-50 text-coral-700 border border-coral-200'}">${escapeHtml(b.bookingType)}</span>
+                            <span class="px-2 py-0.5 rounded-md bg-belacan-50 border border-belacan-200 text-plum-700">${escapeHtml(b.sourceOfReferral)}</span>
+                            <span class="px-2 py-0.5 rounded-md bg-belacan-50 border border-belacan-200 text-plum-700">${escapeHtml(b.requestingDept)}</span>
+                        </div>
+                        <div class="text-xs text-plum-800 font-semibold">${escapeHtml(b.indication)}</div>
+                        <div class="text-[11px] text-plum-500 flex flex-wrap justify-between gap-1 pt-2 border-t border-belacan-100">
+                            <span>Pakar: <strong class="text-plum-900">${escapeHtml(b.orderedByPakar)}</strong></span>
+                            <span>By: ${escapeHtml(b.bookedBy)} (${escapeHtml(b.bookedByRole)})</span>
+                        </div>
+                        <div class="flex items-center justify-end gap-2 pt-1">
+                            <button onclick="openDetailModal('${b.id}')" class="px-3 py-1.5 rounded-lg bg-belacan-50 text-belacan-800 text-[11px] font-bold">View</button>
+                            <button onclick="editBooking('${b.id}')" class="px-3 py-1.5 rounded-lg bg-belacan-100 text-belacan-900 text-[11px] font-bold">Edit</button>
+                            <button onclick="confirmDeleteBooking('${b.id}')" class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-700 text-[11px] font-bold">Delete</button>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            tbody.innerHTML = list.map(b => {
+                const isOp = b.bookingType === 'Outpatient';
+                return `
+                <tr class="hover:bg-belacan-50/50 transition-colors">
+                    <td class="py-3 px-4 whitespace-nowrap">
+                        <div class="font-bold text-plum-900">${escapeHtml(b.date)}</div>
+                        <div class="text-[11px] text-plum-500">${formatTime12h(b.time)}${b.slotNumber ? ` (S${b.slotNumber})` : ''}</div>
+                    </td>
+                    <td class="py-3 px-3 whitespace-nowrap">
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${isOp ? 'bg-belacan-100 text-belacan-800' : 'bg-coral-50 text-coral-700 border border-coral-200'}">${escapeHtml(b.bookingType)}</span>
+                    </td>
+                    <td class="py-3 px-3">
+                        <div onclick="openDetailModal('${b.id}')" class="cursor-pointer font-bold text-plum-900 hover:text-belacan-700">${escapeHtml(b.patientName)}</div>
+                        <div class="text-[11px] font-mono text-plum-500">${escapeHtml(b.mrn)}</div>
+                    </td>
+                    <td class="py-3 px-3 font-semibold text-belacan-800 whitespace-nowrap">${escapeHtml(b.sourceOfReferral)}</td>
+                    <td class="py-3 px-3 max-w-[200px] text-plum-800">${escapeHtml(b.indication)}</td>
+                    <td class="py-3 px-3 text-plum-700 whitespace-nowrap">${escapeHtml(b.requestingDept)}</td>
+                    <td class="py-3 px-3 text-plum-800 font-medium">${escapeHtml(b.orderedByPakar)}</td>
+                    <td class="py-3 px-3 whitespace-nowrap">
+                        <div class="font-semibold text-plum-800">${escapeHtml(b.bookedBy)}</div>
+                        <div class="text-[10px] text-plum-400">${escapeHtml(b.bookedByRole)}</div>
+                    </td>
+                    <td class="py-3 px-3 whitespace-nowrap">
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${getStatusBadgeClasses(b.status)}">${escapeHtml(b.status)}</span>
+                    </td>
+                    <td class="py-3 px-4 text-right whitespace-nowrap no-print">
+                        <button onclick="openDetailModal('${b.id}')" class="p-1.5 rounded-lg hover:bg-belacan-100 text-plum-600" title="View"><i data-lucide="eye" class="w-3.5 h-3.5"></i></button>
+                        <button onclick="editBooking('${b.id}')" class="p-1.5 rounded-lg hover:bg-belacan-100 text-belacan-700" title="Edit"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                        <button onclick="confirmDeleteBooking('${b.id}')" class="p-1.5 rounded-lg hover:bg-rose-100 text-rose-700" title="Delete"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            if (window.lucide) window.lucide.createIcons();
+        };
+
+        // =========================================================================
+        // 14. BOOKING MODAL, 6-SLOT PICKER & FORM HANDLERS
+        // =========================================================================
+        window.toggleCustomInput = function(selectId, inputId) {
+            const sel = document.getElementById(selectId);
+            const inp = document.getElementById(inputId);
+            if (!sel || !inp) return;
+            if (sel.value === 'Other') {
+                inp.classList.remove('hidden');
+                inp.required = true;
+                inp.focus();
+            } else {
+                inp.classList.add('hidden');
+                inp.required = false;
+                inp.value = '';
+            }
+        };
+
+        function setSelectOrCustom(selectId, inputId, value) {
+            const sel = document.getElementById(selectId);
+            const inp = document.getElementById(inputId);
+            const options = Array.from(sel.options).map(o => o.value);
+            if (options.includes(value)) {
+                sel.value = value;
+                inp.classList.add('hidden');
+                inp.required = false;
+                inp.value = '';
+            } else {
+                sel.value = 'Other';
+                inp.classList.remove('hidden');
+                inp.required = true;
+                inp.value = value || '';
+            }
+        }
+
+        window.setAdHocTimePreset = function(t) {
+            document.getElementById('f-time').value = t;
+        };
+
+        window.setAdHocTimeNow = function() {
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('f-time').value = `${hh}:${mm}`;
+        };
+
+        window.selectBookingType = function(type) {
+            document.getElementById('f-type').value = type;
+            onBookingDateOrTypeChange();
+        };
+
+        window.jumpFormToNextOpDate = function() {
+            const cur = document.getElementById('f-date').value || state.selectedDate;
+            document.getElementById('f-date').value = getNextOutpatientDate(cur);
+            document.getElementById('f-type').value = 'Outpatient';
+            onBookingDateOrTypeChange();
+        };
+
+        window.selectVisualSlot = function(slotNum) {
+            document.getElementById('f-slot').value = String(slotNum);
+            onBookingDateOrTypeChange();
+        };
+
+        window.onBookingDateOrTypeChange = function() {
+            const dateStr = document.getElementById('f-date').value || state.selectedDate;
+            const type = document.getElementById('f-type').value;
+            const editingId = document.getElementById('booking-id').value || null;
+            const isOpDay = isOutpatientDay(dateStr);
+
+            const btnOp = document.getElementById('btn-type-outpatient');
+            const btnAh = document.getElementById('btn-type-adhoc');
+            const banner = document.getElementById('booking-rule-banner');
+            const slotWrap = document.getElementById('slot-selector-wrapper');
+            const adhocWrap = document.getElementById('adhoc-time-wrapper');
+            const submitBtn = document.getElementById('booking-submit-btn');
+
+            if (type === 'Outpatient') {
+                btnOp.className = 'py-2 px-3 rounded-xl border border-belacan-600 bg-belacan-gradient text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs';
+                btnAh.className = 'py-2 px-3 rounded-xl border border-belacan-200 bg-white text-plum-600 hover:bg-belacan-50 text-xs font-bold transition-all flex items-center justify-center gap-1.5';
+            } else {
+                btnOp.className = 'py-2 px-3 rounded-xl border border-belacan-200 bg-white text-plum-600 hover:bg-belacan-50 text-xs font-bold transition-all flex items-center justify-center gap-1.5';
+                btnAh.className = 'py-2 px-3 rounded-xl border border-coral-600 bg-coral-600 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs';
+            }
+
+            if (type === 'Ad Hoc') {
+                slotWrap.classList.add('hidden');
+                adhocWrap.classList.remove('hidden');
+                submitBtn.disabled = false;
+                banner.className = 'text-xs px-3.5 py-2.5 rounded-xl bg-coral-50 border border-coral-200 text-coral-700 flex items-start gap-2';
+                banner.innerHTML = `<i data-lucide="zap" class="w-4 h-4 shrink-0 mt-0.5"></i><span><strong>Ad Hoc Mode (Any Day / Any Time):</strong> Unrestricted 24-hour booking. Does not affect the Tue/Wed 6-slot Outpatient cap.</span>`;
+            } else {
+                adhocWrap.classList.add('hidden');
+                if (!isOpDay) {
+                    slotWrap.classList.add('hidden');
+                    submitBtn.disabled = true;
+                    const nextOp = getNextOutpatientDate(dateStr);
+                    banner.className = 'text-xs px-3.5 py-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 space-y-2';
+                    banner.innerHTML = `
+                        <div class="flex items-start gap-2">
+                            <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                            <span><strong>${formatDisplayDate(dateStr)}</strong> is not an Outpatient day. Outpatient ECHO is strictly <strong>Tuesday &amp; Wednesday at 2:00 PM</strong>.</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2 pl-6">
+                            <button type="button" onclick="selectBookingType('Ad Hoc')" class="px-2.5 py-1 rounded-lg bg-coral-600 text-white text-[11px] font-bold">Switch to Ad Hoc (Anytime)</button>
+                            <button type="button" onclick="jumpFormToNextOpDate()" class="px-2.5 py-1 rounded-lg bg-belacan-700 text-white text-[11px] font-bold">Jump to Next Tue/Wed (${nextOp})</button>
+                        </div>`;
+                } else {
+                    slotWrap.classList.remove('hidden');
+                    const taken = getActiveOutpatientBookings(dateStr, editingId);
+                    const takenMap = {};
+                    taken.forEach(b => { if (b.slotNumber) takenMap[b.slotNumber] = b; });
+
+                    const remaining = MAX_OUTPATIENT_PER_DAY - taken.length;
+                    document.getElementById('slot-availability-pill').textContent = `${remaining} of 6 available`;
+
+                    let selectedSlot = parseInt(document.getElementById('f-slot').value, 10) || 1;
+                    if (takenMap[selectedSlot]) {
+                        const firstFree = OUTPATIENT_SLOTS.find(s => !takenMap[s.slot]);
+                        selectedSlot = firstFree ? firstFree.slot : 0;
+                        document.getElementById('f-slot').value = String(selectedSlot);
+                    }
+
+                    if (remaining <= 0) {
+                        submitBtn.disabled = true;
+                        banner.className = 'text-xs px-3.5 py-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 flex items-start gap-2';
+                        banner.innerHTML = `<i data-lucide="alert-triangle" class="w-4 h-4 shrink-0 mt-0.5"></i><span>All 6 Outpatient slots are full on ${dateStr}. Switch to <strong>Ad Hoc</strong> for urgent ward cases or pick another Tue/Wed.</span>`;
+                    } else {
+                        submitBtn.disabled = false;
+                        banner.className = 'text-xs px-3.5 py-2.5 rounded-xl bg-belacan-100/80 border border-belacan-200 text-belacan-900 flex items-start gap-2';
+                        banner.innerHTML = `<i data-lucide="check-circle-2" class="w-4 h-4 shrink-0 mt-0.5 text-belacan-600"></i><span><strong>Outpatient Session Open:</strong> ${remaining} slot${remaining === 1 ? '' : 's'} remaining on ${formatDisplayDate(dateStr)}.</span>`;
+                    }
+
+                    document.getElementById('visual-slot-grid').innerHTML = OUTPATIENT_SLOTS.map(s => {
+                        const occ = takenMap[s.slot];
+                        if (occ) {
+                            return `
+                            <div class="p-2.5 rounded-xl border border-belacan-200 bg-belacan-100/50 opacity-70 cursor-not-allowed">
+                                <div class="text-[10px] font-bold text-plum-500">Slot ${s.slot} &bull; ${s.short}</div>
+                                <div class="text-[11px] font-bold text-plum-700 truncate mt-0.5">Taken: ${escapeHtml(occ.patientName)}</div>
+                            </div>`;
+                        }
+                        const isSel = selectedSlot === s.slot;
+                        return `
+                        <button type="button" onclick="selectVisualSlot(${s.slot})" class="p-2.5 rounded-xl border text-left transition-all ${isSel ? 'border-belacan-700 bg-belacan-gradient text-white shadow-rose-sm' : 'border-belacan-200 bg-white hover:border-belacan-500 text-plum-900'}">
+                            <div class="text-[10px] font-bold ${isSel ? 'text-belacan-100' : 'text-belacan-700'}">Slot ${s.slot} &bull; ${s.short}</div>
+                            <div class="text-xs font-extrabold mt-0.5">${isSel ? 'Selected' : 'Available'}</div>
+                        </button>`;
+                    }).join('');
+                }
+            }
+            if (window.lucide) window.lucide.createIcons();
+        };
+
+        window.openBookingModal = function(opts = {}) {
+            document.getElementById('booking-form').reset();
+            document.getElementById('booking-id').value = '';
+            document.getElementById('booking-modal-title').textContent = 'New ECHO Booking';
+
+            const dateStr = opts.date || state.selectedDate;
+            document.getElementById('f-date').value = dateStr;
+
+            const defaultType = opts.type || (isOutpatientDay(dateStr) ? 'Outpatient' : 'Ad Hoc');
+            document.getElementById('f-type').value = defaultType;
+            document.getElementById('f-slot').value = String(opts.slot || 1);
+            document.getElementById('f-time').value = '10:00';
+            document.getElementById('f-booked-role').value = state.staff.role;
+            document.getElementById('f-booked-by').value = state.staff.name;
+            document.getElementById('f-status').value = 'Booked';
+
+            ['f-referral-custom', 'f-dept-custom', 'f-indication-custom', 'f-pakar'].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.add('hidden');
+                el.required = false;
+                el.value = '';
+            });
+
+            onBookingDateOrTypeChange();
+            const modal = document.getElementById('booking-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.editBooking = function(id) {
+            const b = state.bookings.find(x => x.id === id);
+            if (!b) return;
+            closeDetailModal();
+
+            document.getElementById('booking-id').value = b.id;
+            document.getElementById('booking-modal-title').textContent = 'Edit ECHO Booking';
+            document.getElementById('f-date').value = b.date;
+            document.getElementById('f-type').value = b.bookingType;
+            document.getElementById('f-slot').value = String(b.slotNumber || 1);
+            document.getElementById('f-time').value = b.time || '10:00';
+            document.getElementById('f-name').value = b.patientName || '';
+            document.getElementById('f-mrn').value = b.mrn || '';
+
+            setSelectOrCustom('f-referral', 'f-referral-custom', b.sourceOfReferral);
+            setSelectOrCustom('f-dept', 'f-dept-custom', b.requestingDept);
+            setSelectOrCustom('f-indication', 'f-indication-custom', b.indication);
+            setSelectOrCustom('f-pakar-select', 'f-pakar', b.orderedByPakar);
+
+            document.getElementById('f-booked-role').value = b.bookedByRole || 'Dr';
+            document.getElementById('f-booked-by').value = b.bookedBy || '';
+            document.getElementById('f-status').value = b.status || 'Booked';
+            document.getElementById('f-remarks').value = b.remarks || '';
+
+            onBookingDateOrTypeChange();
+            const modal = document.getElementById('booking-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeBookingModal = function() {
+            const modal = document.getElementById('booking-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.saveBooking = async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('booking-id').value || null;
+            const date = document.getElementById('f-date').value;
+            const bookingType = document.getElementById('f-type').value;
+
+            let slotNumber = null;
+            let time = document.getElementById('f-time').value || '10:00';
+
+            if (bookingType === 'Outpatient') {
+                if (!isOutpatientDay(date)) {
+                    showToast('Outpatient ECHO is strictly Tuesday & Wednesday at 2:00 PM.', 'error');
+                    return;
+                }
+                slotNumber = parseInt(document.getElementById('f-slot').value, 10);
+                const slotObj = OUTPATIENT_SLOTS.find(s => s.slot === slotNumber);
+                if (!slotObj) {
+                    showToast('Please select an available Outpatient slot.', 'error');
+                    return;
+                }
+                time = slotObj.time;
+            }
+
+            const getVal = (selId, custId) => {
+                const s = document.getElementById(selId).value;
+                return s === 'Other' ? document.getElementById(custId).value.trim() : s;
+            };
+
+            const payload = {
+                date,
+                bookingType,
+                slotNumber,
+                time,
+                patientName: document.getElementById('f-name').value.trim(),
+                mrn: document.getElementById('f-mrn').value.trim().toUpperCase(),
+                sourceOfReferral: getVal('f-referral', 'f-referral-custom'),
+                requestingDept: getVal('f-dept', 'f-dept-custom'),
+                indication: getVal('f-indication', 'f-indication-custom'),
+                orderedByPakar: getVal('f-pakar-select', 'f-pakar'),
+                bookedByRole: document.getElementById('f-booked-role').value,
+                bookedBy: document.getElementById('f-booked-by').value.trim(),
+                status: document.getElementById('f-status').value,
+                remarks: document.getElementById('f-remarks').value.trim(),
+                updatedAt: new Date().toISOString()
+            };
+
+            try {
+                if (id) {
+                    await updateBookingRecord(id, payload);
+                    showToast('ECHO booking updated.', 'success');
+                } else {
+                    payload.createdAt = new Date().toISOString();
+                    await createBookingRecord(payload);
+                    showToast('New ECHO booking saved.', 'success');
+                }
+                closeBookingModal();
+            } catch (err) {
+                console.error(err);
+                showToast('Failed to save booking.', 'error');
+            }
+        };
+
+        // =========================================================================
+        // 15. DETAIL, DELETE, STAFF & CONFIRM MODALS
+        // =========================================================================
+        window.openDetailModal = function(id) {
+            const b = state.bookings.find(x => x.id === id);
+            if (!b) return;
+            const isOp = b.bookingType === 'Outpatient';
+
+            document.getElementById('detail-modal-body').innerHTML = `
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <span class="px-2.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase ${isOp ? 'bg-belacan-100 text-belacan-800' : 'bg-coral-50 text-coral-700 border border-coral-200'}">
+                            ${escapeHtml(b.bookingType)}${b.slotNumber ? ` &bull; Slot ${b.slotNumber}` : ' &bull; 24h'}
+                        </span>
+                        <h4 class="font-display text-lg font-extrabold text-plum-900 mt-1.5">${escapeHtml(b.patientName)}</h4>
+                        <p class="text-xs font-mono text-plum-500">${escapeHtml(b.mrn)}</p>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-bold ${getStatusBadgeClasses(b.status)}">${escapeHtml(b.status)}</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-belacan-50 border border-belacan-200/80 text-xs">
+                    <div>
+                        <div class="text-[10px] font-bold uppercase text-plum-400">Date &amp; Time</div>
+                        <div class="font-bold text-plum-900 mt-0.5">${formatDisplayDate(b.date)}<br/>${formatTime12h(b.time)}</div>
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-bold uppercase text-plum-400">Source of Referral</div>
+                        <div class="font-bold text-belacan-800 mt-0.5">${escapeHtml(b.sourceOfReferral)}</div>
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-bold uppercase text-plum-400">Requesting Dept</div>
+                        <div class="font-bold text-plum-900 mt-0.5">${escapeHtml(b.requestingDept)}</div>
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-bold uppercase text-plum-400">Ordered By (Pakar)</div>
+                        <div class="font-bold text-plum-900 mt-0.5">${escapeHtml(b.orderedByPakar)}</div>
+                    </div>
+                    <div class="col-span-2">
+                        <div class="text-[10px] font-bold uppercase text-plum-400">Clinical Indication</div>
+                        <div class="font-bold text-plum-900 mt-0.5">${escapeHtml(b.indication)}</div>
+                    </div>
+                    <div class="col-span-2">
+                        <div class="text-[10px] font-bold uppercase text-plum-400">Booked By</div>
+                        <div class="font-semibold text-plum-800 mt-0.5">${escapeHtml(b.bookedBy)} (${escapeHtml(b.bookedByRole)})</div>
+                    </div>
+                    ${b.remarks ? `
+                    <div class="col-span-2 pt-2 border-t border-belacan-200/60">
+                        <div class="text-[10px] font-bold uppercase text-plum-400">Remarks</div>
+                        <div class="text-plum-700 mt-0.5">${escapeHtml(b.remarks)}</div>
+                    </div>` : ''}
+                </div>
+
+                <div class="flex flex-wrap items-center gap-1.5">
+                    <span class="text-[11px] font-bold text-plum-500 mr-1">Quick Status:</span>
+                    ${['Booked', 'Completed', 'DNA', 'Cancelled'].map(st => `
+                        <button onclick="quickUpdateStatus('${b.id}', '${st}'); closeDetailModal();" class="px-2.5 py-1 rounded-lg text-[11px] font-bold border ${b.status === st ? 'bg-belacan-gradient text-white border-transparent' : 'bg-white border-belacan-200 text-plum-700 hover:bg-belacan-50'}">${st}</button>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('detail-modal-footer').innerHTML = `
+                <button onclick="confirmDeleteBooking('${b.id}')" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold">Delete</button>
+                <div class="flex items-center gap-2">
+                    <button onclick="closeDetailModal()" class="px-4 py-2 rounded-xl border border-belacan-200 text-xs font-bold text-plum-600">Close</button>
+                    <button onclick="editBooking('${b.id}')" class="px-4 py-2 rounded-xl bg-belacan-btn text-white text-xs font-bold">Edit Booking</button>
+                </div>
+            `;
+
+            const modal = document.getElementById('detail-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeDetailModal = function() {
+            const modal = document.getElementById('detail-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.confirmDeleteBooking = function(id) {
+            const b = state.bookings.find(x => x.id === id);
+            if (!b) return;
+            closeDetailModal();
+            openConfirmModal(
+                'Delete ECHO Booking?',
+                `Are you sure you want to permanently remove ${b.patientName} (${b.mrn}) on ${b.date}?`,
+                async () => {
+                    try {
+                        await deleteBookingRecord(id);
+                        showToast('Booking deleted.', 'success');
+                    } catch (err) {
+                        console.error(err);
+                        showToast('Failed to delete booking.', 'error');
+                    }
+                }
+            );
+        };
+
+        let pendingConfirmCallback = null;
+        function openConfirmModal(title, message, onConfirm) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+            pendingConfirmCallback = onConfirm;
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        window.closeConfirmModal = function() {
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            pendingConfirmCallback = null;
+        };
+
+        document.getElementById('confirm-ok-btn').addEventListener('click', async () => {
+            const cb = pendingConfirmCallback;
+            closeConfirmModal();
+            if (cb) await cb();
+        });
+
+        // Staff Profile Modal
+        function loadStaffProfile() {
+            try {
+                const raw = localStorage.getItem(STAFF_STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed && parsed.name && parsed.role) {
+                        state.staff = { ...parsed, configured: true };
+                    }
+                }
+            } catch (e) {}
+            updateStaffUI();
+        }
+
+        function updateStaffUI() {
+            const roleLabel = state.staff.role === 'Dr' ? 'Doctor (Dr)' : state.staff.role === 'Nurse' ? 'Staff Nurse' : 'MA (PPP)';
+            document.getElementById('staff-display-name').textContent = state.staff.name;
+            document.getElementById('staff-display-role').textContent = roleLabel;
+            document.getElementById('staff-avatar-badge').textContent = state.staff.role === 'Nurse' ? 'SN' : state.staff.role.toUpperCase();
+            const printGen = document.getElementById('print-generated-by');
+            if (printGen) printGen.textContent = `${state.staff.name} (${roleLabel})`;
+        }
+
+        window.openStaffModal = function() {
+            document.getElementById('staff-name-input').value = state.staff.name;
+            const radio = document.querySelector(`input[name="staffRole"][value="${state.staff.role}"]`);
+            if (radio) radio.checked = true;
+            const modal = document.getElementById('staff-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeStaffModal = function() {
+            const modal = document.getElementById('staff-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.saveStaffProfile = function(e) {
+            e.preventDefault();
+            const role = document.querySelector('input[name="staffRole"]:checked')?.value || 'Dr';
+            const name = document.getElementById('staff-name-input').value.trim();
+            if (!name) return;
+            state.staff = { role, name, configured: true };
+            try {
+                localStorage.setItem(STAFF_STORAGE_KEY, JSON.stringify(state.staff));
+            } catch (err) {}
+            updateStaffUI();
+            closeStaffModal();
+            showToast(`Signed in as ${name} (${role}).`, 'success');
+        };
+
+        // =========================================================================
+        // 16. PDF CENSUS EXPORT (html2pdf.js) & PRINT REPORT
+        // =========================================================================
+        window.printCurrentReport = function() {
+            document.getElementById('print-timestamp').textContent = new Date().toLocaleString('en-MY');
+            window.print();
+        };
+
+        window.exportCensusPDF = function() {
+            const { range } = getPeriodBookings();
+            const list = getFilteredCensusRecords();
+            const active = list.filter(b => b.status !== 'Cancelled');
+            const opCount = active.filter(b => b.bookingType === 'Outpatient').length;
+            const ahCount = active.filter(b => b.bookingType === 'Ad Hoc').length;
+            const completed = list.filter(b => b.status === 'Completed').length;
+
+            const wrapper = document.getElementById('pdf-export-wrapper');
+            wrapper.innerHTML = `
+                <div style="font-family: Inter, Arial, sans-serif; color: #2B1B22; padding: 14px;">
+                    <div style="background: linear-gradient(135deg, #881B3E 0%, #C43A62 60%, #D9486E 100%); color: #FFFFFF; padding: 16px 20px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <div>
+                            <div style="font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: 0.9;">Jabatan Obstetrik &amp; Ginekologi (O&amp;G)</div>
+                            <div style="font-size: 16px; font-weight: 800; margin-top: 2px;">O&amp;G Echocardiogram (ECHO) Clinical Census &amp; HOD Report</div>
+                            <div style="font-size: 11px; margin-top: 3px; opacity: 0.95;">Period: ${escapeHtml(range.label)}</div>
+                        </div>
+                        <div style="text-align: right; font-size: 10px;">
+                            <div><strong>Prepared By:</strong> ${escapeHtml(state.staff.name)} (${escapeHtml(state.staff.role)})</div>
+                            <div><strong>Generated:</strong> ${new Date().toLocaleString('en-MY')}</div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-bottom: 14px;">
+                        <div style="flex: 1; background: #FDF6F8; border: 1px solid #F4DCE3; border-radius: 10px; padding: 10px;">
+                            <div style="font-size: 9px; text-transform: uppercase; color: #7A5C67; font-weight: 700;">Total Bookings</div>
+                            <div style="font-size: 18px; font-weight: 800; color: #2B1B22;">${list.length}</div>
+                        </div>
+                        <div style="flex: 1; background: #FDF6F8; border: 1px solid #F4DCE3; border-radius: 10px; padding: 10px;">
+                            <div style="font-size: 9px; text-transform: uppercase; color: #7A5C67; font-weight: 700;">Outpatient (Tue/Wed)</div>
+                            <div style="font-size: 18px; font-weight: 800; color: #C43A62;">${opCount}</div>
+                        </div>
+                        <div style="flex: 1; background: #FFF1E6; border: 1px solid #FBD5BA; border-radius: 10px; padding: 10px;">
+                            <div style="font-size: 9px; text-transform: uppercase; color: #B85518; font-weight: 700;">Ad Hoc (24h)</div>
+                            <div style="font-size: 18px; font-weight: 800; color: #D96B27;">${ahCount}</div>
+                        </div>
+                        <div style="flex: 1; background: #E6F7F2; border: 1px solid #B7E8DA; border-radius: 10px; padding: 10px;">
+                            <div style="font-size: 9px; text-transform: uppercase; color: #176E59; font-weight: 700;">Completed</div>
+                            <div style="font-size: 18px; font-weight: 800; color: #1F8A70;">${completed}</div>
+                        </div>
+                    </div>
+
+                    <table style="width: 100%; border-collapse: collapse; font-size: 9.5px;">
+                        <thead>
+                            <tr style="background: #FDEBF0; color: #881B3E; text-align: left;">
+                                <th style="padding: 6px; border: 1px solid #F4DCE3;">Date &amp; Time</th>
+                                <th style="padding: 6px; border: 1px solid #F4DCE3;">Type</th>
+                                <th style="padding: 6px; border: 1px solid #F4DCE3;">Patient &amp; MRN</th>
+                                <th style="padding: 6px; border: 1px solid #F4DCE3;">Referral</th>
+                                <th style="padding: 6px; border: 1px solid #F4DCE3;">Indication</th>
+                                <th style="padding: 6px; border: 1px solid #F4DCE3;">Req. Dept</th>
+                                <th style="padding: 6px; border: 1px solid #F4DCE3;">Ordered By (Pakar)</th>
+                                <th style="padding: 6px; border: 1px solid #F4DCE3;">Booked By</th>
+                                <th style="padding: 6px; border: 1px solid #F4DCE3;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${list.map(b => `
+                                <tr>
+                                    <td style="padding: 5px 6px; border: 1px solid #F4DCE3; white-space: nowrap;">${escapeHtml(b.date)}<br/>${formatTime12h(b.time)}</td>
+                                    <td style="padding: 5px 6px; border: 1px solid #F4DCE3;">${escapeHtml(b.bookingType)}</td>
+                                    <td style="padding: 5px 6px; border: 1px solid #F4DCE3;"><strong>${escapeHtml(b.patientName)}</strong><br/>${escapeHtml(b.mrn)}</td>
+                                    <td style="padding: 5px 6px; border: 1px solid #F4DCE3;">${escapeHtml(b.sourceOfReferral)}</td>
+                                    <td style="padding: 5px 6px; border: 1px solid #F4DCE3;">${escapeHtml(b.indication)}</td>
+                                    <td style="padding: 5px 6px; border: 1px solid #F4DCE3;">${escapeHtml(b.requestingDept)}</td>
+                                    <td style="padding: 5px 6px; border: 1px solid #F4DCE3;">${escapeHtml(b.orderedByPakar)}</td>
+                                    <td style="padding: 5px 6px; border: 1px solid #F4DCE3;">${escapeHtml(b.bookedBy)} (${escapeHtml(b.bookedByRole)})</td>
+                                    <td style="padding: 5px 6px; border: 1px solid #F4DCE3; font-weight: 700;">${escapeHtml(b.status)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            wrapper.classList.remove('hidden');
+            showToast('Generating Pink Belacan A4 PDF Census...', 'info');
+
+            const opt = {
+                margin: 8,
+                filename: `OG_ECHO_Census_${range.start}_to_${range.end}.pdf`,
+                image: { type: 'jpeg', quality: 0.96 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+
+            html2pdf().set(opt).from(wrapper).save().then(() => {
+                wrapper.classList.add('hidden');
+                showToast('PDF Census downloaded.', 'success');
+            }).catch(err => {
+                console.error(err);
+                wrapper.classList.add('hidden');
+                showToast('PDF generation failed. Try Print Report.', 'error');
+            });
+        };
+
+        // =========================================================================
+        // 17. TOAST NOTIFICATIONS
+        // =========================================================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            const styles = type === 'success'
+                ? 'bg-clinical-600 text-white'
+                : type === 'error'
+                    ? 'bg-rose-700 text-white'
+                    : 'bg-belacan-900 text-white';
+
+            el.className = `${styles} px-4 py-2.5 rounded-xl shadow-rose-lg text-xs font-bold flex items-center gap-2 animate-modal`;
+            el.textContent = message;
+            container.appendChild(el);
+            setTimeout(() => {
+                el.style.opacity = '0';
+                el.style.transition = 'opacity 0.25s ease';
+                setTimeout(() => el.remove(), 260);
+            }, 3200);
+        }
+
+        // =========================================================================
+        // 18. BOOTSTRAP APPLICATION
+        // =========================================================================
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStaffProfile();
+            setAnalyticsPeriod('demo30');
+            window.switchView('daily');
+            initFirebase();
+            if (window.lucide) window.lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
